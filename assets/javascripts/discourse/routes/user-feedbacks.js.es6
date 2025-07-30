@@ -6,7 +6,7 @@ export default DiscourseRoute.extend({
     return ajax("/user_feedbacks.json", {
       type: "GET",
       data: {
-        feedback_to_id: this.modelFor("user").get("id"),
+        feedback_to_id: this.modelFor("user").id,
       },
     }).then((response) => {
       return response;
@@ -14,11 +14,12 @@ export default DiscourseRoute.extend({
   },
 
   setupController(controller, model) {
+    const user = this.modelFor("user");
     controller.setProperties({
-      feedback_to_id: this.modelFor("user").get("id"),
+      feedback_to_id: user.id,
       readOnly:
         this.currentUser &&
-        this.currentUser.feedbacks_to.includes(this.modelFor("user").get("id")),
+        this.currentUser.feedbacks_to?.includes(user.id),
       model: model,
     });
   },

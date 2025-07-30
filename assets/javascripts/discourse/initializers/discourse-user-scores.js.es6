@@ -1,5 +1,6 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import ComponentConnector from "discourse/widgets/component-connector";
+import I18n from "I18n";
 
 function initializeDiscourseUserFeedbacks(api) {
   const site = api.container.lookup("site:main");
@@ -78,7 +79,7 @@ export default {
     const siteSettings = container.lookup("site-settings:main");
 
     if (siteSettings.user_feedbacks_enabled) {
-      withPluginApi("0.10.1", initializeDiscourseUserFeedbacks);
+      withPluginApi("1.4.0", initializeDiscourseUserFeedbacks);
     }
   },
 };
