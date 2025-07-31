@@ -79,7 +79,7 @@ export default {
     const siteSettings = container.lookup("site-settings:main");
 
     if (siteSettings.user_feedbacks_enabled) {
-      withPluginApi("1.4.0", initializeDiscourseUserFeedbacks);
+      withPluginApi("0.8.31", initializeDiscourseUserFeedbacks);
     }
   },
 };

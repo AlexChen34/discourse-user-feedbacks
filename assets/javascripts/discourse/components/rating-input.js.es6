@@ -1,81 +1,75 @@
 import Component from "@ember/component";
-import { action, computed } from "@ember/object";
+import { computed } from "@ember/object";
 
 export default Component.extend({
   classNames: ["user-ratings"],
   value: 0,
 
-  didReceiveAttrs() {
-    this._super(...arguments);
-    // Initialize rating display when component receives attributes
-    if (this.value !== undefined) {
-      this.notifyPropertyChange('value');
-    }
-  },
-
   checkedOne: computed("value", function() {
-    return parseInt(this.value) >= 1;
+    return parseInt(this.value || 0) >= 1;
   }),
 
   checkedTwo: computed("value", function() {
-    return parseInt(this.value) >= 2;
+    return parseInt(this.value || 0) >= 2;
   }),
 
   checkedThree: computed("value", function() {
-    return parseInt(this.value) >= 3;
+    return parseInt(this.value || 0) >= 3;
   }),
 
   checkedFour: computed("value", function() {
-    return parseInt(this.value) >= 4;
+    return parseInt(this.value || 0) >= 4;
   }),
 
   checkedFive: computed("value", function() {
-    return parseInt(this.value) >= 5;
+    return parseInt(this.value || 0) >= 5;
   }),
 
-  percentageOne: computed("value", "checkedOne", function() {
-    if (!this.checkedOne) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+  percentageOne: computed("value", function() {
+    const val = parseFloat(this.value || 0);
+    if (val > 0 && val < 1) {
+      return (val % 1) * 100;
     }
     return 0;
   }),
 
-  percentageTwo: computed("value", "checkedOne", "checkedTwo", function() {
-    if (this.checkedOne && !this.checkedTwo) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+  percentageTwo: computed("value", function() {
+    const val = parseFloat(this.value || 0);
+    if (val > 1 && val < 2) {
+      return (val % 1) * 100;
     }
     return 0;
   }),
 
-  percentageThree: computed("value", "checkedTwo", "checkedThree", function() {
-    if (this.checkedTwo && !this.checkedThree) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+  percentageThree: computed("value", function() {
+    const val = parseFloat(this.value || 0);
+    if (val > 2 && val < 3) {
+      return (val % 1) * 100;
     }
     return 0;
   }),
 
-  percentageFour: computed("value", "checkedThree", "checkedFour", function() {
-    if (this.checkedThree && !this.checkedFour) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+  percentageFour: computed("value", function() {
+    const val = parseFloat(this.value || 0);
+    if (val > 3 && val < 4) {
+      return (val % 1) * 100;
     }
     return 0;
   }),
 
-  percentageFive: computed("value", "checkedFour", "checkedFive", function() {
-    if (this.checkedFour && !this.checkedFive) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+  percentageFive: computed("value", function() {
+    const val = parseFloat(this.value || 0);
+    if (val > 4 && val < 5) {
+      return (val % 1) * 100;
     }
     return 0;
   }),
 
   actions: {
     changeRating(value) {
-      if (value && this.readOnly) return;
-
-      if (value > 0) {
+      if (this.readOnly) return;
+      if (value && value > 0) {
         this.set("value", value);
-      } else {
-        this.set("value", this.value);
       }
     }
   }

@@ -1,5 +1,5 @@
 import Controller from "@ember/controller";
-import { action, computed } from "@ember/object";
+import { computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import I18n from "I18n";
 
@@ -11,12 +11,12 @@ export default Controller.extend({
     "discourse_user_feedbacks.user_feedbacks.user_review.placeholder"
   ),
 
-  canGiveFeedback: computed("feedback_to_id", function() {
-    return this.feedback_to_id !== this.currentUser && this.currentUser.id;
+  canGiveFeedback: computed("feedback_to_id", "currentUser", function() {
+    return this.feedback_to_id !== this.get("currentUser.id") && this.get("currentUser.id");
   }),
 
   disabled: computed("rating", function() {
-    return !parseInt(this.rating) > 0;
+    return !(parseInt(this.rating) > 0);
   }),
 
   actions: {
@@ -30,9 +30,14 @@ export default Controller.extend({
           feedback_to_id: this.feedback_to_id,
         },
       }).then((response) => {
-        this.model?.feedbacks?.unshiftObject(response.user_feedback);
+        if (this.model && this.model.feedbacks) {
+          this.model.feedbacks.unshiftObject(response.user_feedback);
+        }
         this.set("rating", 0);
         this.set("review", "");
+        this.set("readOnly", false);
+      }).catch(() => {
+        this.set("readOnly", false);
       });
     }
   }

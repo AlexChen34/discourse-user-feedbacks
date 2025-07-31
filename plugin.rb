@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 # name: discourse-user-feedbacks
 # about: Allow users to give feedback to fellow users with star ratings and reviews
-# version: 2.0.0
+# version: 2.0.1
 # authors: Ahmed Gagan, Updated for 2025
-# url: https://github.com/Ahmedgagan/discourse-user-feedbacks
-# required_version: 3.3.0
+# url: https://github.com/AlexChen34/discourse-user-feedbacks
+# required_version: 2.8.0
 
 enabled_site_setting :user_feedbacks_enabled
 
