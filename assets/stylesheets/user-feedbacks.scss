@@ -124,3 +124,53 @@
     }
   }
 }
+
+// New rating display styles for widget
+.average-ratings {
+  .rating-display {
+    display: inline-flex;
+    align-items: center;
+    
+    .stars {
+      display: inline-flex;
+      margin-right: 0.25em;
+      
+      .star {
+        color: var(--primary-low-mid);
+        font-size: 0.9em;
+        margin-right: 1px;
+        
+        &.filled {
+          color: var(--quaternary);
+        }
+        
+        &.partial {
+          background: linear-gradient(90deg, var(--quaternary) 50%, var(--primary-low-mid) 50%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+      }
+    }
+    
+    .rating-value {
+      font-size: 0.85em;
+      color: var(--primary-medium);
+      margin-left: 0.25em;
+    }
+  }
+  
+  .rating-count {
+    margin-left: 0.5em;
+    font-size: 0.85em;
+    
+    a {
+      color: var(--tertiary);
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

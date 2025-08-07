@@ -26,35 +26,35 @@ export default class RatingInputComponent extends Component {
   }
 
   get percentageOne() {
-    if (!this.checkedOne) {
+    if (!this.checkedOne && this.value > 0 && this.value < 1) {
       return ((Math.round(this.value * 100) / 100) % 1) * 100;
     }
     return 0;
   }
 
   get percentageTwo() {
-    if (this.checkedOne && !this.checkedTwo) {
+    if (this.checkedOne && !this.checkedTwo && this.value > 1 && this.value < 2) {
       return ((Math.round(this.value * 100) / 100) % 1) * 100;
     }
     return 0;
   }
 
   get percentageThree() {
-    if (this.checkedTwo && !this.checkedThree) {
+    if (this.checkedTwo && !this.checkedThree && this.value > 2 && this.value < 3) {
       return ((Math.round(this.value * 100) / 100) % 1) * 100;
     }
     return 0;
   }
 
   get percentageFour() {
-    if (this.checkedThree && !this.checkedFour) {
+    if (this.checkedThree && !this.checkedFour && this.value > 3 && this.value < 4) {
       return ((Math.round(this.value * 100) / 100) % 1) * 100;
     }
     return 0;
   }
 
   get percentageFive() {
-    if (this.checkedFour && !this.checkedFive) {
+    if (this.checkedFour && !this.checkedFive && this.value > 4 && this.value < 5) {
       return ((Math.round(this.value * 100) / 100) % 1) * 100;
     }
     return 0;
@@ -62,11 +62,9 @@ export default class RatingInputComponent extends Component {
 
   @action
   changeRating(value) {
-    if (value && this.args.readOnly) return;
+    if (this.args.readOnly) return;
 
-    if (value > 0) {
-      this.value = value;
-    }
+    this.value = value;
     
     if (this.args.onChange) {
       this.args.onChange(this.value);

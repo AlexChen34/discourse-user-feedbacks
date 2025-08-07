@@ -6,57 +6,40 @@ function initializeDiscourseUserFeedbacks(api) {
 
   api.includePostAttributes("user_average_rating", "user_rating_count");
 
-  const loc = site && site.mobileView ? "before" : "after";
-
   if (
     !site.mobileView &&
     siteSettings.user_feedbacks_display_average_ratings_beside_username_on_post
   ) {
-    api.decorateWidget(`poster-name:${loc}`, (helper) => {
+    api.decorateWidget("poster-name", (helper) => {
       const value = helper.attrs.user_average_rating;
-      if (helper.attrs.user_id <= 0) {
+      if (helper.attrs.user_id <= 0 || !value) {
         return;
       }
+      
       return helper.h("div.average-ratings", [
-        helper.widget.attach("rating-input", {
-          readOnly: true,
-          checkedOne: value >= 1,
-          checkedTwo: value >= 2,
-          checkedThree: value >= 3,
-            checkedFour: value >= 4,
-            checkedFive: value >= 5,
-            percentageOne:
-              value > 0 && value < 1
-                ? ((Math.round(value * 100) / 100) % 1) * 100
-                : 0,
-            percentageTwo:
-              value > 1 && value < 2
-                ? ((Math.round(value * 100) / 100) % 1) * 100
-                : 0,
-            percentageThree:
-              value > 2 && value < 3
-                ? ((Math.round(value * 100) / 100) % 1) * 100
-                : 0,
-            percentageFour:
-              value > 3 && value < 4
-                ? ((Math.round(value * 100) / 100) % 1) * 100
-                : 0,
-            percentageFive:
-              value > 4 && value < 5
-                ? ((Math.round(value * 100) / 100) % 1) * 100
-                : 0,
-        }),
+        helper.h("div.rating-display", [
+          helper.h("span.stars", 
+            Array.from({length: 5}, (_, i) => {
+              const starValue = i + 1;
+              let starClass = "star";
+              
+              if (value >= starValue) {
+                starClass += " filled";
+              } else if (value > i && value < starValue) {
+                starClass += " partial";
+              }
+              
+              return helper.h(`span.${starClass}`, "★");
+            })
+          ),
+          helper.h("span.rating-value", ` ${value.toFixed(1)}`),
+        ]),
         helper.h(
           "span.rating-count",
           helper.h(
             "a",
             { href: `${helper.attrs.usernameUrl}/feedbacks` },
-            I18n.t(
-              "discourse_user_feedbacks.user_feedbacks.user_ratings_count",
-              {
-                count: helper.attrs.user_rating_count,
-              }
-            )
+            `(${helper.attrs.user_rating_count})`
           )
         ),
       ]);
