@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 # name: discourse-user-feedbacks
-# about: allow user to give feedback to fellow users
-# version: 1.0.0
+# about: Allow users to give feedback to fellow users
+# version: 2.0.0
 # authors: Ahmed Gagan
 # url: https://github.com/Ahmedgagan/discourse-user-feedbacks
+# required_version: 3.1.0
 
 enabled_site_setting :user_feedbacks_enabled
 
@@ -58,31 +59,32 @@ after_initialize do
     user = object
     user = object[:user] if object.class != User
 
-    return nil if !user
+    return nil unless user
 
-    count = DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).count
-    count = 1 if count <= 0
-    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).sum(:rating) / count.to_f
+    feedbacks = DiscourseUserFeedbacks::UserFeedback.for_user(user.id)
+    return 0 if feedbacks.empty?
+    
+    (feedbacks.sum(:rating).to_f / feedbacks.count).round(2)
   end
 
   add_to_serializer(:basic_user, :rating_count) do
     user = object
     user = object[:user] if object.class != User
 
-    return nil if !user
+    return nil unless user
 
-    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).count
+    DiscourseUserFeedbacks::UserFeedback.for_user(user.id).count
   end
 
   add_to_serializer(:post, :user_average_rating) do
     user = object.user
-    count = DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).count
-    count = 1 if count <= 0
-
-    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).sum(:rating) / count.to_f
+    feedbacks = DiscourseUserFeedbacks::UserFeedback.for_user(user.id)
+    return 0 if feedbacks.empty?
+    
+    (feedbacks.sum(:rating).to_f / feedbacks.count).round(2)
   end
 
   add_to_serializer(:post, :user_rating_count) do
-    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: object.user.id).count
+    DiscourseUserFeedbacks::UserFeedback.for_user(object.user.id).count
   end
 end

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class CreateDiscourseUserFeedback < ActiveRecord::Migration[6.1]
+class CreateDiscourseUserFeedback < ActiveRecord::Migration[7.0]
   def change
     create_table :discourse_user_feedbacks do |t|
       t.integer :user_id, null: false

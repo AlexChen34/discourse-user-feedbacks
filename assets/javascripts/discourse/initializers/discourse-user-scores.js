@@ -1,9 +1,8 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import ComponentConnector from "discourse/widgets/component-connector";
 
 function initializeDiscourseUserFeedbacks(api) {
-  const site = api.container.lookup("site:main");
-  const siteSettings = api.container.lookup("site-settings:main");
+  const site = api.container.lookup("service:site");
+  const siteSettings = api.container.lookup("service:site-settings");
 
   api.includePostAttributes("user_average_rating", "user_rating_count");
 
@@ -19,15 +18,11 @@ function initializeDiscourseUserFeedbacks(api) {
         return;
       }
       return helper.h("div.average-ratings", [
-        new ComponentConnector(
-          helper.widget,
-          "rating-input",
-          {
-            layoutName: "components/rating-input",
-            readOnly: true,
-            checkedOne: value >= 1,
-            checkedTwo: value >= 2,
-            checkedThree: value >= 3,
+        helper.widget.attach("rating-input", {
+          readOnly: true,
+          checkedOne: value >= 1,
+          checkedTwo: value >= 2,
+          checkedThree: value >= 3,
             checkedFour: value >= 4,
             checkedFive: value >= 5,
             percentageOne:
@@ -50,9 +45,7 @@ function initializeDiscourseUserFeedbacks(api) {
               value > 4 && value < 5
                 ? ((Math.round(value * 100) / 100) % 1) * 100
                 : 0,
-          },
-          ["value"]
-        ),
+        }),
         helper.h(
           "span.rating-count",
           helper.h(
@@ -78,7 +71,7 @@ export default {
     const siteSettings = container.lookup("site-settings:main");
 
     if (siteSettings.user_feedbacks_enabled) {
-      withPluginApi("0.10.1", initializeDiscourseUserFeedbacks);
+      withPluginApi("1.8.0", initializeDiscourseUserFeedbacks);
     }
   },
 };
