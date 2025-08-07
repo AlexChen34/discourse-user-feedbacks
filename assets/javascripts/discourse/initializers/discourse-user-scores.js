@@ -1,64 +1,62 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 function initializeDiscourseUserFeedbacks(api) {
-  const site = api.container.lookup("service:site");
-  const siteSettings = api.container.lookup("service:site-settings");
+  try {
+    // Support for both old and new API versions
+    if (api.addTrackedPostProperties) {
+      api.addTrackedPostProperties("user_average_rating", "user_rating_count");
+    } else if (api.includePostAttributes) {
+      api.includePostAttributes("user_average_rating", "user_rating_count");
+    }
 
-  api.includePostAttributes("user_average_rating", "user_rating_count");
+    const site = api.container.lookup("service:site");
+    const siteSettings = api.container.lookup("service:site-settings");
 
-  if (
-    !site.mobileView &&
-    siteSettings.user_feedbacks_display_average_ratings_beside_username_on_post
-  ) {
-    // Use modern post-stream decoration instead of deprecated widget
-    api.decoratePostUsername((el, helper) => {
-      const post = helper.getModel();
-      const value = post.user_average_rating;
-      const count = post.user_rating_count;
-      
-      if (!value || value <= 0 || !count) {
-        return;
-      }
+    if (
+      !site?.mobileView &&
+      siteSettings?.user_feedbacks_display_average_ratings_beside_username_on_post
+    ) {
+      // Use widget decoration which is more stable
+      api.decorateWidget("poster-name", (helper) => {
+        try {
+          const post = helper.getModel ? helper.getModel() : helper.attrs;
+          const value = post?.user_average_rating;
+          const count = post?.user_rating_count;
+          
+          if (!value || value <= 0 || !count) {
+            return;
+          }
 
-      const ratingEl = document.createElement("div");
-      ratingEl.className = "average-ratings-inline";
-      
-      const starsEl = document.createElement("span");
-      starsEl.className = "stars-inline";
-      
-      // Create stars
-      for (let i = 1; i <= 5; i++) {
-        const star = document.createElement("span");
-        star.className = "star-inline";
-        star.textContent = "★";
-        
-        if (value >= i) {
-          star.classList.add("filled");
-        } else if (value > i - 1) {
-          star.classList.add("partial");
-          star.style.background = `linear-gradient(90deg, var(--quaternary) ${((value - (i - 1)) * 100)}%, var(--primary-low-mid) ${((value - (i - 1)) * 100)}%)`;
-          star.style.webkitBackgroundClip = "text";
-          star.style.webkitTextFillColor = "transparent";
-          star.style.backgroundClip = "text";
+          return helper.h("div.average-ratings-inline", [
+            helper.h("span.stars-inline", 
+              Array.from({length: 5}, (_, i) => {
+                const starValue = i + 1;
+                let starClass = "star-inline";
+                
+                if (value >= starValue) {
+                  starClass += " filled";
+                } else if (value > i && value < starValue) {
+                  starClass += " partial";
+                }
+                
+                return helper.h(`span.${starClass}`, "★");
+              })
+            ),
+            helper.h("span.rating-value-inline", ` ${value.toFixed(1)}`),
+            helper.h("span.rating-count-inline", 
+              helper.h("a", { 
+                href: `/u/${post.username}/feedbacks` 
+              }, `(${count})`)
+            )
+          ]);
+        } catch (error) {
+          console.error("Error decorating poster name:", error);
+          return null;
         }
-        
-        starsEl.appendChild(star);
-      }
-      
-      const ratingValueEl = document.createElement("span");
-      ratingValueEl.className = "rating-value-inline";
-      ratingValueEl.textContent = ` ${value.toFixed(1)}`;
-      
-      const countEl = document.createElement("span");
-      countEl.className = "rating-count-inline";
-      countEl.innerHTML = ` <a href="/u/${post.username}/feedbacks">(${count})</a>`;
-      
-      ratingEl.appendChild(starsEl);
-      ratingEl.appendChild(ratingValueEl);
-      ratingEl.appendChild(countEl);
-      
-      el.appendChild(ratingEl);
-    });
+      });
+    }
+  } catch (error) {
+    console.error("Error in initializeDiscourseUserFeedbacks:", error);
   }
 }
 
@@ -66,10 +64,14 @@ export default {
   name: "discourse-user-feedbacks",
 
   initialize(container) {
-    const siteSettings = container.lookup("service:site-settings");
+    try {
+      const siteSettings = container.lookup("service:site-settings");
 
-    if (siteSettings.user_feedbacks_enabled) {
-      withPluginApi("1.8.0", initializeDiscourseUserFeedbacks);
+      if (siteSettings?.user_feedbacks_enabled) {
+        withPluginApi("0.8.31", initializeDiscourseUserFeedbacks);
+      }
+    } catch (error) {
+      console.error("Error initializing discourse-user-feedbacks plugin:", error);
     }
   },
 };
