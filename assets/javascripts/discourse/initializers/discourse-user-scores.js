@@ -16,44 +16,69 @@ function initializeDiscourseUserFeedbacks(api) {
       !site?.mobileView &&
       siteSettings?.user_feedbacks_display_average_ratings_beside_username_on_post
     ) {
-      // Use widget decoration which is more stable
-      api.decorateWidget("poster-name", (helper) => {
-        try {
-          const post = helper.getModel ? helper.getModel() : helper.attrs;
-          const value = post?.user_average_rating;
-          const count = post?.user_rating_count;
-          
-          if (!value || value <= 0 || !count) {
-            return;
-          }
+      // Use modern post decoration API instead of deprecated widget
+      if (api.decorateCooked) {
+        api.decorateCooked((element, helper) => {
+          try {
+            const postStream = helper?.getModel?.()?.postStream;
+            if (!postStream) return;
 
-          return helper.h("div.average-ratings-inline", [
-            helper.h("span.stars-inline", 
-              Array.from({length: 5}, (_, i) => {
-                const starValue = i + 1;
-                let starClass = "star-inline";
+            const posterNames = element.querySelectorAll('.names .first a, .names a');
+            posterNames.forEach(nameEl => {
+              const username = nameEl.textContent?.trim();
+              if (!username) return;
+
+              const post = postStream.posts?.find(p => p.username === username);
+              if (!post) return;
+
+              const value = post.user_average_rating;
+              const count = post.user_rating_count;
+              
+              if (!value || value <= 0 || !count) return;
+
+              // Check if rating already added
+              if (nameEl.querySelector('.average-ratings-inline')) return;
+
+              const ratingEl = document.createElement("span");
+              ratingEl.className = "average-ratings-inline";
+              
+              const starsEl = document.createElement("span");
+              starsEl.className = "stars-inline";
+              
+              // Create stars
+              for (let i = 1; i <= 5; i++) {
+                const star = document.createElement("span");
+                star.className = "star-inline";
+                star.textContent = "★";
                 
-                if (value >= starValue) {
-                  starClass += " filled";
-                } else if (value > i && value < starValue) {
-                  starClass += " partial";
+                if (value >= i) {
+                  star.classList.add("filled");
+                } else if (value > i - 1) {
+                  star.classList.add("partial");
                 }
                 
-                return helper.h(`span.${starClass}`, "★");
-              })
-            ),
-            helper.h("span.rating-value-inline", ` ${value.toFixed(1)}`),
-            helper.h("span.rating-count-inline", 
-              helper.h("a", { 
-                href: `/u/${post.username}/feedbacks` 
-              }, `(${count})`)
-            )
-          ]);
-        } catch (error) {
-          console.error("Error decorating poster name:", error);
-          return null;
-        }
-      });
+                starsEl.appendChild(star);
+              }
+              
+              const ratingValueEl = document.createElement("span");
+              ratingValueEl.className = "rating-value-inline";
+              ratingValueEl.textContent = ` ${value.toFixed(1)}`;
+              
+              const countEl = document.createElement("span");
+              countEl.className = "rating-count-inline";
+              countEl.innerHTML = ` <a href="/u/${username}/feedbacks">(${count})</a>`;
+              
+              ratingEl.appendChild(starsEl);
+              ratingEl.appendChild(ratingValueEl);
+              ratingEl.appendChild(countEl);
+              
+              nameEl.appendChild(ratingEl);
+            });
+          } catch (error) {
+            console.error("Error decorating cooked content:", error);
+          }
+        });
+      }
     }
   } catch (error) {
     console.error("Error in initializeDiscourseUserFeedbacks:", error);
