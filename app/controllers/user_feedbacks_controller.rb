@@ -7,7 +7,13 @@ module DiscourseUserFeedbacks
     PAGE_SIZE = 30
 
     def create
-      feedback_params = params.require(:user_feedback).permit(:rating, :feedback_to_id, :review)
+      # Support both nested and flat parameter formats for compatibility
+      if params[:user_feedback].present?
+        feedback_params = params.require(:user_feedback).permit(:rating, :feedback_to_id, :review)
+      else
+        # Fallback for legacy format
+        feedback_params = params.permit(:rating, :feedback_to_id, :review)
+      end
       
       raise Discourse::InvalidParameters.new(:rating) if feedback_params[:rating].to_i <= 0
       raise Discourse::InvalidParameters.new(:feedback_to_id) if feedback_params[:feedback_to_id].to_i <= 0

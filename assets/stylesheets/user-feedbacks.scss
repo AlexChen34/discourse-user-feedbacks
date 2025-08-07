@@ -174,3 +174,44 @@
     }
   }
 }
+
+// Inline rating styles for post usernames
+.average-ratings-inline {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5em;
+  
+  .stars-inline {
+    display: inline-flex;
+    
+    .star-inline {
+      color: var(--primary-low-mid);
+      font-size: 0.8em;
+      margin-right: 1px;
+      
+      &.filled {
+        color: var(--quaternary);
+      }
+    }
+  }
+  
+  .rating-value-inline {
+    font-size: 0.75em;
+    color: var(--primary-medium);
+    margin-left: 0.25em;
+  }
+  
+  .rating-count-inline {
+    margin-left: 0.25em;
+    font-size: 0.75em;
+    
+    a {
+      color: var(--tertiary);
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
