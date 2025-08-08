@@ -1,3 +1,126 @@
+// Admin User Feedbacks Styles
+.admin-user-feedbacks {
+  .feedback-stats {
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+
+    h3 {
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+
+      .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--primary-very-low);
+        border-radius: 4px;
+
+        .stat-value {
+          display: block;
+          font-size: 2em;
+          font-weight: bold;
+          color: var(--tertiary);
+          margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+          color: var(--primary-medium);
+          font-size: 0.9em;
+        }
+      }
+    }
+  }
+
+  .feedback-controls {
+    margin-bottom: 1.5rem;
+
+    .search-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      .search-input {
+        flex: 1;
+        max-width: 400px;
+        padding: 0.5rem;
+        border: 1px solid var(--primary-low);
+        border-radius: 4px;
+      }
+    }
+  }
+
+  .feedbacks-table {
+    .loading-container {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      
+      th, td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--primary-low);
+      }
+
+      th {
+        background: var(--primary-very-low);
+        font-weight: bold;
+        color: var(--primary);
+      }
+
+      .review-text {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .rating-input {
+        width: 60px;
+        padding: 0.25rem;
+      }
+
+      .review-input {
+        width: 100%;
+        max-width: 200px;
+        resize: vertical;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      padding: 1rem;
+
+      .page-info {
+        color: var(--primary-medium);
+        font-size: 0.9em;
+      }
+    }
+  }
+}
+
 // User Feedbacks Container Styles
 .user-feedbacks-container {
   max-width: 800px;

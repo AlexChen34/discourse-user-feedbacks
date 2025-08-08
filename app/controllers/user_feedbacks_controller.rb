@@ -28,13 +28,35 @@ module DiscourseUserFeedbacks
     end
 
     def update
-      feedback_params = params.require(:user_feedback).permit(:rating, :feedback_to_id, :review)
       feedback = DiscourseUserFeedbacks::UserFeedback.find(params[:id])
+      
+      # Only allow update if user owns the feedback or is staff
+      unless feedback.user_id == current_user.id || current_user.staff?
+        raise Discourse::InvalidAccess
+      end
+      
+      feedback_params = params.require(:user_feedback).permit(:rating, :feedback_to_id, :review)
 
       raise Discourse::InvalidParameters.new(:rating) if feedback_params[:rating] && feedback_params[:rating].to_i <= 0
 
-      feedback_params[:user_id] = current_user.id
-      feedback.update!(feedback_params)
+      # Staff can modify any feedback, regular users can only modify their own
+      if current_user.staff?
+        feedback.update!(feedback_params)
+        
+        StaffActionLogger.new(current_user).log_custom(
+          'user_feedback_modified',
+          {
+            feedback_id: feedback.id,
+            giver: feedback.user.username,
+            receiver: feedback.feedback_to.username,
+            rating: feedback.rating,
+            details: "Modified by staff member"
+          }
+        )
+      else
+        feedback_params[:user_id] = current_user.id
+        feedback.update!(feedback_params)
+      end
 
       render_serialized(feedback, UserFeedbackSerializer)
     rescue ActiveRecord::RecordInvalid => e
@@ -43,6 +65,26 @@ module DiscourseUserFeedbacks
 
     def destroy
       feedback = DiscourseUserFeedbacks::UserFeedback.find(params[:id])
+      
+      # Only allow deletion if user owns the feedback or is staff
+      unless feedback.user_id == current_user.id || current_user.staff?
+        raise Discourse::InvalidAccess
+      end
+      
+      if current_user.staff?
+        StaffActionLogger.new(current_user).log_custom(
+          'user_feedback_deleted',
+          {
+            feedback_id: feedback.id,
+            giver: feedback.user.username,
+            receiver: feedback.feedback_to.username,
+            rating: feedback.rating,
+            review: feedback.review.to_s[0..100],
+            details: "Deleted by staff member"
+          }
+        )
+      end
+
       feedback.destroy!
 
       render_serialized(feedback, UserFeedbackSerializer)

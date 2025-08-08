@@ -1,0 +1,150 @@
+<div class="admin-user-feedbacks">
+  {{#if this.stats}}
+    <div class="feedback-stats">
+      <h3>{{i18n "discourse_user_feedbacks.admin.statistics"}}</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-value">{{this.stats.total_feedbacks}}</span>
+          <span class="stat-label">{{i18n "discourse_user_feedbacks.admin.total_feedbacks"}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{this.stats.average_rating}}</span>
+          <span class="stat-label">{{i18n "discourse_user_feedbacks.admin.average_rating"}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{this.stats.recent_feedbacks}}</span>
+          <span class="stat-label">{{i18n "discourse_user_feedbacks.admin.recent_feedbacks"}}</span>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  <div class="feedback-controls">
+    <div class="search-controls">
+      {{input
+        value=this.search
+        placeholder=(i18n "discourse_user_feedbacks.admin.search_placeholder")
+        class="search-input"
+        enter=(action "searchFeedbacks")
+      }}
+      {{d-button
+        label="discourse_user_feedbacks.admin.search"
+        action=(action "searchFeedbacks")
+        class="btn-primary"
+      }}
+    </div>
+  </div>
+
+  <div class="feedbacks-table">
+    {{#if this.loading}}
+      <div class="loading-container">
+        {{loading-spinner}}
+      </div>
+    {{else}}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{{i18n "discourse_user_feedbacks.admin.giver"}}</th>
+            <th>{{i18n "discourse_user_feedbacks.admin.receiver"}}</th>
+            <th>{{i18n "discourse_user_feedbacks.admin.rating"}}</th>
+            <th>{{i18n "discourse_user_feedbacks.admin.review"}}</th>
+            <th>{{i18n "discourse_user_feedbacks.admin.date"}}</th>
+            <th>{{i18n "discourse_user_feedbacks.admin.actions"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each this.feedbacks as |feedback|}}
+            <tr>
+              <td>
+                <a href="/u/{{feedback.user.username}}">{{feedback.user.username}}</a>
+              </td>
+              <td>
+                <a href="/u/{{feedback.feedback_to.username}}">{{feedback.feedback_to.username}}</a>
+              </td>
+              <td>
+                {{#if (eq this.editingFeedback.id feedback.id)}}
+                  {{input
+                    value=this.editingFeedback.rating
+                    type="number"
+                    min="1"
+                    max="5"
+                    class="rating-input"
+                  }}
+                {{else}}
+                  {{rating-input value=feedback.rating readOnly=true}}
+                {{/if}}
+              </td>
+              <td>
+                {{#if (eq this.editingFeedback.id feedback.id)}}
+                  {{textarea
+                    value=this.editingFeedback.review
+                    rows="3"
+                    class="review-input"
+                  }}
+                {{else}}
+                  <div class="review-text">
+                    {{#if feedback.review}}
+                      {{feedback.review}}
+                    {{else}}
+                      <em>{{i18n "discourse_user_feedbacks.admin.no_review"}}</em>
+                    {{/if}}
+                  </div>
+                {{/if}}
+              </td>
+              <td>
+                {{format-date feedback.created_at format="medium"}}
+              </td>
+              <td>
+                <div class="action-buttons">
+                  {{#if (eq this.editingFeedback.id feedback.id)}}
+                    {{d-button
+                      label="discourse_user_feedbacks.admin.save"
+                      action=(action "saveFeedback")
+                      class="btn-primary btn-small"
+                    }}
+                    {{d-button
+                      label="discourse_user_feedbacks.admin.cancel"
+                      action=(action "cancelEdit")
+                      class="btn-default btn-small"
+                    }}
+                  {{else}}
+                    {{d-button
+                      label="discourse_user_feedbacks.admin.edit"
+                      action=(action "editFeedback" feedback)
+                      class="btn-default btn-small"
+                    }}
+                    {{d-button
+                      label="discourse_user_feedbacks.admin.delete"
+                      action=(action "deleteFeedback" feedback)
+                      class="btn-danger btn-small"
+                    }}
+                  {{/if}}
+                </div>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      {{#if this.feedbacks}}
+        <div class="pagination">
+          {{d-button
+            label="discourse_user_feedbacks.admin.previous"
+            action=(action "prevPage")
+            disabled=(eq this.page 1)
+            class="btn-default"
+          }}
+          <span class="page-info">
+            {{i18n "discourse_user_feedbacks.admin.page_info" current=this.page total=this.totalPages}}
+          </span>
+          {{d-button
+            label="discourse_user_feedbacks.admin.next"
+            action=(action "nextPage")
+            disabled=(eq this.page this.totalPages)
+            class="btn-default"
+          }}
+        </div>
+      {{/if}}
+    {{/if}}
+  </div>
+</div>
