@@ -5,8 +5,10 @@
     role="button"
     tabindex="0"
   >
-    ☆
-    <span class="partial-fill" style="width:{{this.percentageOne}}%;">★</span>
+    {{#if this.checkedOne}}★{{else}}☆{{/if}}
+    {{#if this.percentageOne}}
+      <span class="partial-fill" style="width:{{this.percentageOne}}%;">★</span>
+    {{/if}}
   </span>
   <span 
     class="icon {{if this.checkedTwo "checked"}} {{if this.percentageTwo "partial"}} {{if @readOnly "read-only"}}" 
@@ -14,8 +16,10 @@
     role="button"
     tabindex="0"
   >
-    ☆
-    <span class="partial-fill" style="width:{{this.percentageTwo}}%;">★</span>
+    {{#if this.checkedTwo}}★{{else}}☆{{/if}}
+    {{#if this.percentageTwo}}
+      <span class="partial-fill" style="width:{{this.percentageTwo}}%;">★</span>
+    {{/if}}
   </span>
   <span 
     class="icon {{if this.checkedThree "checked"}} {{if this.percentageThree "partial"}} {{if @readOnly "read-only"}}" 
@@ -23,8 +27,10 @@
     role="button"
     tabindex="0"
   >
-    ☆
-    <span class="partial-fill" style="width:{{this.percentageThree}}%;">★</span>
+    {{#if this.checkedThree}}★{{else}}☆{{/if}}
+    {{#if this.percentageThree}}
+      <span class="partial-fill" style="width:{{this.percentageThree}}%;">★</span>
+    {{/if}}
   </span>
   <span 
     class="icon {{if this.checkedFour "checked"}} {{if this.percentageFour "partial"}} {{if @readOnly "read-only"}}" 
@@ -32,8 +38,10 @@
     role="button"
     tabindex="0"
   >
-    ☆
-    <span class="partial-fill" style="width:{{this.percentageFour}}%;">★</span>
+    {{#if this.checkedFour}}★{{else}}☆{{/if}}
+    {{#if this.percentageFour}}
+      <span class="partial-fill" style="width:{{this.percentageFour}}%;">★</span>
+    {{/if}}
   </span>
   <span 
     class="icon {{if this.checkedFive "checked"}} {{if this.percentageFive "partial"}} {{if @readOnly "read-only"}}" 
@@ -41,7 +49,9 @@
     role="button"
     tabindex="0"
   >
-    ☆
-    <span class="partial-fill" style="width:{{this.percentageFive}}%;">★</span>
+    {{#if this.checkedFive}}★{{else}}☆{{/if}}
+    {{#if this.percentageFive}}
+      <span class="partial-fill" style="width:{{this.percentageFive}}%;">★</span>
+    {{/if}}
   </span>
 </div>

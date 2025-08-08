@@ -6,3 +6,43 @@ en:
     user_feedbacks_display_average_ratings_on_profile: "Display average user rating on user's profile"
     user_feedbacks_display_average_ratings_on_user_card: "Display average user rating on user card"
     user_feedbacks_hide_feedbacks_from_user: "Hide feedbacks from the user"
+  discourse_user_feedbacks:
+    admin:
+      feedback_management: "User Feedback Management"
+      title: "User Feedbacks Management"
+      menu_label: "User Feedbacks"
+      description: "Manage user feedback and ratings"
+    models:
+      user_feedback:
+        rating_required: "Rating is required"
+        rating_out_of_range: "Rating must be between 1 and 5"
+        giver_required: "Feedback giver is required"
+        receiver_required: "Feedback receiver is required"
+        cannot_rate_self: "You cannot give feedback to yourself"
+        already_given: "You have already given feedback to this user"
+    errors:
+      feedback_not_found: "Feedback not found"
+      unauthorized_access: "You don't have permission to perform this action"
+      invalid_feedback_data: "Invalid feedback data provided"
+      feedback_creation_failed: "Failed to create feedback"
+      feedback_update_failed: "Failed to update feedback"
+      feedback_deletion_failed: "Failed to delete feedback"
+    controllers:
+      admin:
+        user_feedbacks:
+          title: "User Feedbacks Management"
+          index_success: "Feedbacks loaded successfully"
+          update_success: "Feedback updated successfully"
+          delete_success: "Feedback deleted successfully"
+          stats_success: "Statistics loaded successfully"
+    admin_js:
+      admin:
+        user_feedbacks:
+          title: "User Feedbacks"
+          columns:
+            giver: "From User"
+            receiver: "To User" 
+            rating: "Rating"
+            review: "Review"
+            created_at: "Date"
+            actions: "Actions"

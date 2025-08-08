@@ -198,9 +198,14 @@
 
   .icon.checked::before {
     color: var(--quaternary) !important;
-    content: "\2605";
+    content: "★";
     position: absolute;
     left: 0;
+    top: 0;
+  }
+
+  .icon.checked {
+    color: var(--quaternary) !important;
   }
 
   .partial-fill {

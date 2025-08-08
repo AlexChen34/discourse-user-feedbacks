@@ -11,8 +11,11 @@
     </div>
     {{format-date this.feedback.created_at format="medium"}}
   </div>
-  <p>
-    {{html-safe this.feedback.review}}
-  </p>
+  {{#if this.feedback.review}}
+    <div class="review-content">
+      <strong>Review:</strong>
+      <p>{{this.feedback.review}}</p>
+    </div>
+  {{/if}}
   <hr>
 </div>
