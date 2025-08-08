@@ -2,7 +2,7 @@
 
 module DiscourseUserFeedbacks
   class UserFeedback < ActiveRecord::Base
-    self.table_name = 'discourse_user_feedbacks'
+    self.table_name = 'user_feedbacks'
 
     belongs_to :user
     belongs_to :feedback_to, class_name: 'User'

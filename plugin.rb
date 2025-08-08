@@ -8,10 +8,6 @@
 
 enabled_site_setting :user_feedbacks_enabled
 
-if respond_to?(:register_svg_icon)
-  register_svg_icon "fas fa-star"
-end
-
 register_asset 'stylesheets/user-feedbacks.scss'
 
 after_initialize do
@@ -24,40 +20,36 @@ after_initialize do
     end
   end
 
-  [
-    "../app/controllers/user_feedbacks_controller.rb",
-    "../app/controllers/admin/user_feedbacks_controller.rb",
-    "../app/controllers/admin/plugins/user_feedbacks_controller.rb",
-    "../app/serializers/user_feedback_serializer.rb",
-    "../app/models/user_feedback.rb",
-    "../lib/discourse_user_feedbacks/user_extension.rb",
-    "../lib/discourse_user_feedbacks/user_feedbacks_constraint.rb",
-    "../config/routes"
-  ].each { |path| require File.expand_path(path, __FILE__) }
+  # Load plugin files
+  require_relative 'app/controllers/user_feedbacks_controller'
+  require_relative 'app/controllers/admin/user_feedbacks_controller'
+  require_relative 'app/serializers/user_feedback_serializer'
+  require_relative 'app/models/user_feedback'
+  require_relative 'lib/discourse_user_feedbacks/user_extension'
+  require_relative 'lib/discourse_user_feedbacks/user_feedbacks_constraint'
 
+  # Mount engine routes
   Discourse::Application.routes.append do
     mount ::DiscourseUserFeedbacks::Engine, at: '/'
   end
 
+  # Apply user extensions
   reloadable_patch do |plugin|
     User.class_eval { prepend DiscourseUserFeedbacks::UserExtension }
   end
 
+  # Add serializer fields
   add_to_serializer(:basic_user, :feedbacks_to) do
     user = object
     user = object[:user] if object.class != User
-
     return nil if !user
-
     return nil if !user.feedbacks
-
     user.feedbacks.pluck(:feedback_to_id)
   end
 
   add_to_serializer(:basic_user, :average_rating) do
     user = object
     user = object[:user] if object.class != User
-
     return nil unless user
 
     feedbacks = DiscourseUserFeedbacks::UserFeedback.for_user(user.id)
@@ -69,7 +61,6 @@ after_initialize do
   add_to_serializer(:basic_user, :rating_count) do
     user = object
     user = object[:user] if object.class != User
-
     return nil unless user
 
     DiscourseUserFeedbacks::UserFeedback.for_user(user.id).count

@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 DiscourseUserFeedbacks::Engine.routes.draw do
-  resources :user_feedbacks, constraints: DiscourseUserFeedbacks::UserFeedbacksConstraint.new do
-    member do
-      put :moderate  # Admin moderation endpoint
-    end
-  end
+  resources :user_feedbacks, constraints: DiscourseUserFeedbacks::UserFeedbacksConstraint.new
   
   # User feedback routes
   %w{users u}.each do |root_path|
