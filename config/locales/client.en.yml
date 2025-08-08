@@ -6,7 +6,7 @@ en:
     discourse_user_feedbacks:
       admin:
         title: "User Feedbacks Management"
-        statistics: "Statistics" 
+        statistics: "Statistics"
         total_feedbacks: "Total Feedbacks"
         average_rating: "Average Rating"
         recent_feedbacks: "Recent (30 days)"
