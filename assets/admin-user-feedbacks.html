@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Feedbacks Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #f5f5f5; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .stats { display: flex; gap: 20px; margin-bottom: 20px; }
+        .stat-box { background: #e8f4fd; padding: 15px; border-radius: 5px; text-align: center; }
+        .feedbacks-table { width: 100%; border-collapse: collapse; }
+        .feedbacks-table th, .feedbacks-table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        .feedbacks-table th { background: #f5f5f5; }
+        .btn { padding: 5px 10px; margin: 2px; border: none; border-radius: 3px; cursor: pointer; }
+        .btn-edit { background: #007cba; color: white; }
+        .btn-delete { background: #d63638; color: white; }
+        .search-box { margin-bottom: 20px; }
+        .search-box input { padding: 8px; width: 300px; }
+        .search-box button { padding: 8px 15px; background: #007cba; color: white; border: none; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>User Feedbacks Management</h1>
+        <p>Manage all user feedback and ratings in your forum</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-box">
+            <h3 id="total-feedbacks">Loading...</h3>
+            <p>Total Feedbacks</p>
+        </div>
+        <div class="stat-box">
+            <h3 id="average-rating">Loading...</h3>
+            <p>Average Rating</p>
+        </div>
+        <div class="stat-box">
+            <h3 id="recent-feedbacks">Loading...</h3>
+            <p>Recent (30 days)</p>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search by username or review content...">
+        <button onclick="searchFeedbacks()">Search</button>
+        <button onclick="loadFeedbacks()">Refresh</button>
+    </div>
+
+    <table class="feedbacks-table">
+        <thead>
+            <tr>
+                <th>From User</th>
+                <th>To User</th>
+                <th>Rating</th>
+                <th>Review</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="feedbacks-tbody">
+            <tr>
+                <td colspan="6" style="text-align: center;">Loading feedbacks...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        let feedbacks = [];
+        let currentPage = 1;
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/admin/user_feedbacks/stats.json');
+                const stats = await response.json();
+                
+                document.getElementById('total-feedbacks').textContent = stats.total_feedbacks || 0;
+                document.getElementById('average-rating').textContent = (stats.average_rating || 0).toFixed(1);
+                document.getElementById('recent-feedbacks').textContent = stats.recent_feedbacks || 0;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadFeedbacks() {
+            try {
+                const searchTerm = document.getElementById('search-input').value;
+                const url = `/admin/user_feedbacks.json?page=${currentPage}&search=${encodeURIComponent(searchTerm)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                feedbacks = data.feedbacks || [];
+                renderFeedbacks();
+            } catch (error) {
+                console.error('Error loading feedbacks:', error);
+                document.getElementById('feedbacks-tbody').innerHTML = 
+                    '<tr><td colspan="6" style="text-align: center; color: red;">Error loading feedbacks</td></tr>';
+            }
+        }
+
+        function renderFeedbacks() {
+            const tbody = document.getElementById('feedbacks-tbody');
+            
+            if (feedbacks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No feedbacks found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = feedbacks.map(feedback => `
+                <tr>
+                    <td><a href="/u/${feedback.user.username}">${feedback.user.username}</a></td>
+                    <td><a href="/u/${feedback.feedback_to.username}">${feedback.feedback_to.username}</a></td>
+                    <td>${feedback.rating} ⭐</td>
+                    <td>${feedback.review || '<em>No review</em>'}</td>
+                    <td>${new Date(feedback.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-edit" onclick="editFeedback(${feedback.id})">Edit</button>
+                        <button class="btn btn-delete" onclick="deleteFeedback(${feedback.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function searchFeedbacks() {
+            currentPage = 1;
+            loadFeedbacks();
+        }
+
+        async function deleteFeedback(id) {
+            if (!confirm('Are you sure you want to delete this feedback?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/user_feedbacks/${id}.json`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Feedback deleted successfully');
+                    loadFeedbacks();
+                    loadStats();
+                } else {
+                    alert('Error deleting feedback');
+                }
+            } catch (error) {
+                console.error('Error deleting feedback:', error);
+                alert('Error deleting feedback');
+            }
+        }
+
+        function editFeedback(id) {
+            const feedback = feedbacks.find(f => f.id === id);
+            if (!feedback) return;
+
+            const newRating = prompt('Enter new rating (1-5):', feedback.rating);
+            if (!newRating || newRating < 1 || newRating > 5) return;
+
+            const newReview = prompt('Enter new review:', feedback.review || '');
+
+            updateFeedback(id, newRating, newReview);
+        }
+
+        async function updateFeedback(id, rating, review) {
+            try {
+                const response = await fetch(`/admin/user_feedbacks/${id}.json`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        user_feedback: {
+                            rating: parseInt(rating),
+                            review: review
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Feedback updated successfully');
+                    loadFeedbacks();
+                } else {
+                    alert('Error updating feedback');
+                }
+            } catch (error) {
+                console.error('Error updating feedback:', error);
+                alert('Error updating feedback');
+            }
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadFeedbacks();
+        });
+    </script>
+</body>
+</html>

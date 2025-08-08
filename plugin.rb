@@ -27,6 +27,7 @@ after_initialize do
   [
     "../app/controllers/user_feedbacks_controller.rb",
     "../app/controllers/admin/user_feedbacks_controller.rb",
+    "../app/controllers/admin/plugins/user_feedbacks_controller.rb",
     "../app/serializers/user_feedback_serializer.rb",
     "../app/models/user_feedback.rb",
     "../lib/discourse_user_feedbacks/user_extension.rb",
@@ -85,7 +86,4 @@ after_initialize do
   add_to_serializer(:post, :user_rating_count) do
     DiscourseUserFeedbacks::UserFeedback.for_user(object.user.id).count
   end
-
-  # Add admin menu item
-  add_admin_route 'user_feedbacks', 'plugins.user_feedbacks'
 end
