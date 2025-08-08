@@ -1,13 +1,12 @@
-import Component from "@glimmer/component";
+import Controller from "@ember/controller";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import I18n from "I18n";
 
-export default class AdminUserFeedbacksComponent extends Component {
-  @service currentUser;
-  @service appEvents;
+export default class AdminPluginsUserFeedbacksController extends Controller {
+  @service dialog;
   
   @tracked feedbacks = [];
   @tracked loading = false;
@@ -18,9 +17,10 @@ export default class AdminUserFeedbacksComponent extends Component {
   @tracked editingFeedback = null;
   @tracked stats = null;
 
-  constructor() {
-    super(...arguments);
-    this.loadFeedbacks();
+  // Load data when controller is set up
+  setupController(controller, model) {
+    super.setupController(...arguments);
+    this.feedbacks = model.feedbacks || [];
     this.loadStats();
   }
 
@@ -82,46 +82,50 @@ export default class AdminUserFeedbacksComponent extends Component {
         }
       });
 
-      this.appEvents.trigger("modal-body:flash", {
-        text: I18n.t("discourse_user_feedbacks.admin.feedback_updated"),
-        messageClass: "success"
-      });
+      if (this.dialog && this.dialog.alert) {
+        this.dialog.alert(I18n.t("discourse_user_feedbacks.admin.feedback_updated"));
+      }
 
       this.editingFeedback = null;
       this.loadFeedbacks();
     } catch (error) {
       console.error("Error updating feedback:", error);
-      this.appEvents.trigger("modal-body:flash", {
-        text: I18n.t("discourse_user_feedbacks.admin.update_error"),
-        messageClass: "error"
-      });
+      if (this.dialog && this.dialog.alert) {
+        this.dialog.alert(I18n.t("discourse_user_feedbacks.admin.update_error"));
+      }
     }
   }
 
   @action
   async deleteFeedback(feedback) {
-    if (!confirm(I18n.t("discourse_user_feedbacks.admin.confirm_delete"))) {
-      return;
+    let confirmResult = true;
+    
+    if (this.dialog && this.dialog.confirm) {
+      confirmResult = await this.dialog.confirm(
+        I18n.t("discourse_user_feedbacks.admin.confirm_delete")
+      );
+    } else {
+      confirmResult = confirm(I18n.t("discourse_user_feedbacks.admin.confirm_delete"));
     }
+    
+    if (!confirmResult) return;
 
     try {
       await ajax(`/admin/user_feedbacks/${feedback.id}.json`, {
         type: "DELETE"
       });
 
-      this.appEvents.trigger("modal-body:flash", {
-        text: I18n.t("discourse_user_feedbacks.admin.feedback_deleted"),
-        messageClass: "success"
-      });
+      if (this.dialog && this.dialog.alert) {
+        this.dialog.alert(I18n.t("discourse_user_feedbacks.admin.feedback_deleted"));
+      }
 
       this.loadFeedbacks();
       this.loadStats();
     } catch (error) {
       console.error("Error deleting feedback:", error);
-      this.appEvents.trigger("modal-body:flash", {
-        text: I18n.t("discourse_user_feedbacks.admin.delete_error"),
-        messageClass: "error"
-      });
+      if (this.dialog && this.dialog.alert) {
+        this.dialog.alert(I18n.t("discourse_user_feedbacks.admin.delete_error"));
+      }
     }
   }
 

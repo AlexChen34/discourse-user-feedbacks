@@ -85,4 +85,7 @@ after_initialize do
   add_to_serializer(:post, :user_rating_count) do
     DiscourseUserFeedbacks::UserFeedback.for_user(object.user.id).count
   end
+
+  # Add admin menu item
+  add_admin_route 'user_feedbacks', 'plugins.user_feedbacks'
 end
