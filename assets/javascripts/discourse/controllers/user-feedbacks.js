@@ -12,14 +12,17 @@ export default class UserFeedbacksController extends Controller {
   @tracked rating = 0;
   @tracked review = "";
   @tracked readOnly = false;
+  @tracked target_username = "";
   
   placeholder = I18n.t(
     "discourse_user_feedbacks.user_feedbacks.user_review.placeholder"
   );
 
-  @computed("feedback_to_id")
+  @computed("feedback_to_id", "currentUser.id")
   get canGiveFeedback() {
-    return this.feedback_to_id !== this.currentUser && this.currentUser.id;
+    return this.feedback_to_id && 
+           this.feedback_to_id !== this.currentUser?.id && 
+           this.currentUser?.id;
   }
 
   @computed("rating")

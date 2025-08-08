@@ -34,9 +34,6 @@ after_initialize do
   ].each { |path| require File.expand_path(path, __FILE__) }
 
   Discourse::Application.routes.append do
-    %w{users u}.each do |root_path|
-      get "#{root_path}/:username/feedbacks" => "users#preferences", constraints: { username: RouteFormat.username }
-    end
     mount ::DiscourseUserFeedbacks::Engine, at: '/'
   end
 

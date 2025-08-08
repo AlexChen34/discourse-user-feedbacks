@@ -51,12 +51,20 @@ module DiscourseUserFeedbacks
     end
 
     def index
-      raise Discourse::InvalidParameters.new(:feedback_to_id) if params.key?(:feedback_to_id) && params[:feedback_to_id].to_i <= 0
+      # Handle username-based routing
+      if params[:username].present?
+        user = User.find_by_username(params[:username])
+        raise Discourse::NotFound unless user
+        feedback_to_id = user.id
+      else
+        raise Discourse::InvalidParameters.new(:feedback_to_id) if params.key?(:feedback_to_id) && params[:feedback_to_id].to_i <= 0
+        feedback_to_id = params[:feedback_to_id]
+      end
 
       page = [params[:page].to_i, 1].max
       feedbacks = DiscourseUserFeedbacks::UserFeedback.order(created_at: :desc)
 
-      feedbacks = feedbacks.where(feedback_to_id: params[:feedback_to_id]) if params[:feedback_to_id]
+      feedbacks = feedbacks.where(feedback_to_id: feedback_to_id) if feedback_to_id
       feedbacks = feedbacks.where(user_id: current_user.id) if SiteSetting.user_feedbacks_hide_feedbacks_from_user && !current_user.admin?
 
       count = feedbacks.count
@@ -66,7 +74,8 @@ module DiscourseUserFeedbacks
         count: count, 
         feedbacks: serialize_data(feedbacks, UserFeedbackSerializer),
         page: page,
-        total_pages: (count.to_f / PAGE_SIZE).ceil
+        total_pages: (count.to_f / PAGE_SIZE).ceil,
+        target_user: user&.username || nil
       })
     end
 

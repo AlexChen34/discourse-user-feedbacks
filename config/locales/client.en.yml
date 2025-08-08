@@ -5,10 +5,15 @@ en:
         title: "Feedback"
     discourse_user_feedbacks:
       user_feedbacks:
+        title: "Feedback for %{username}"
+        give_feedback_title: "Give Feedback"
+        received_feedbacks: "Received Feedbacks"
+        total_feedbacks: "Total feedbacks: %{count}"
+        page_info: "Page %{current} of %{total}"
         add_user_feedback: "Add Feedback"
         user_ratings_count: "%{count} ratings"
         add_rating: "Add your rating: "
         user_review:
           placeholder: "Include your review to the user (optional)"
         empty_state_title: "There are no feedbacks yet"
-        empty_state_body: "Feedbacks will be displayed once you get feedback from your fellow community members"
+        empty_state_body: "%{username} hasn't received any feedback from community members yet"
