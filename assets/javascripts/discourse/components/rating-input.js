@@ -5,57 +5,62 @@ import { tracked } from "@glimmer/tracking";
 export default class RatingInputComponent extends Component {
   @tracked value = this.args.value || 0;
   
+  // Update value when args change
+  get currentValue() {
+    return this.args.value !== undefined ? this.args.value : this.value;
+  }
+  
   get checkedOne() {
-    return parseInt(this.value) >= 1;
+    return parseFloat(this.currentValue) >= 1;
   }
 
   get checkedTwo() {
-    return parseInt(this.value) >= 2;
+    return parseFloat(this.currentValue) >= 2;
   }
 
   get checkedThree() {
-    return parseInt(this.value) >= 3;
+    return parseFloat(this.currentValue) >= 3;
   }
 
   get checkedFour() {
-    return parseInt(this.value) >= 4;
+    return parseFloat(this.currentValue) >= 4;
   }
 
   get checkedFive() {
-    return parseInt(this.value) >= 5;
+    return parseFloat(this.currentValue) >= 5;
   }
 
   get percentageOne() {
-    if (!this.checkedOne && this.value > 0 && this.value < 1) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+    if (!this.checkedOne && this.currentValue > 0 && this.currentValue < 1) {
+      return ((Math.round(this.currentValue * 100) / 100) % 1) * 100;
     }
     return 0;
   }
 
   get percentageTwo() {
-    if (this.checkedOne && !this.checkedTwo && this.value > 1 && this.value < 2) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+    if (this.checkedOne && !this.checkedTwo && this.currentValue > 1 && this.currentValue < 2) {
+      return ((Math.round(this.currentValue * 100) / 100) % 1) * 100;
     }
     return 0;
   }
 
   get percentageThree() {
-    if (this.checkedTwo && !this.checkedThree && this.value > 2 && this.value < 3) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+    if (this.checkedTwo && !this.checkedThree && this.currentValue > 2 && this.currentValue < 3) {
+      return ((Math.round(this.currentValue * 100) / 100) % 1) * 100;
     }
     return 0;
   }
 
   get percentageFour() {
-    if (this.checkedThree && !this.checkedFour && this.value > 3 && this.value < 4) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+    if (this.checkedThree && !this.checkedFour && this.currentValue > 3 && this.currentValue < 4) {
+      return ((Math.round(this.currentValue * 100) / 100) % 1) * 100;
     }
     return 0;
   }
 
   get percentageFive() {
-    if (this.checkedFour && !this.checkedFive && this.value > 4 && this.value < 5) {
-      return ((Math.round(this.value * 100) / 100) % 1) * 100;
+    if (this.checkedFour && !this.checkedFive && this.currentValue > 4 && this.currentValue < 5) {
+      return ((Math.round(this.currentValue * 100) / 100) % 1) * 100;
     }
     return 0;
   }

@@ -8,6 +8,7 @@ import { inject as service } from "@ember/service";
 
 export default class UserFeedbacksController extends Controller {
   @service siteSettings;
+  @service appEvents;
   
   @tracked rating = 0;
   @tracked review = "";
@@ -37,6 +38,8 @@ export default class UserFeedbacksController extends Controller {
 
   @action
   createFeedback() {
+    if (!this.canGiveFeedback || this.disabled) return;
+    
     this.readOnly = true;
     ajax("/user_feedbacks", {
       type: "POST",
@@ -48,14 +51,34 @@ export default class UserFeedbacksController extends Controller {
         }
       },
     }).then((response) => {
-      this.model.feedbacks.unshiftObject(response.user_feedback);
+      // Add the new feedback to the model
+      if (response.user_feedback) {
+        if (!this.model.feedbacks) {
+          this.model.feedbacks = [];
+        }
+        this.model.feedbacks.unshiftObject(response.user_feedback);
+        this.model.count = (this.model.count || 0) + 1;
+      }
+      
+      // Reset form
       this.rating = 0;
       this.review = "";
-      this.readOnly = false;
+      this.readOnly = true; // User can only give one feedback
+      
+      // Show success message
+      this.appEvents.trigger("modal-body:flash", {
+        text: I18n.t("discourse_user_feedbacks.user_feedbacks.feedback_created"),
+        messageClass: "success"
+      });
     }).catch((error) => {
       this.readOnly = false;
-      // Handle error appropriately
       console.error("Error creating feedback:", error);
+      
+      // Show error message
+      this.appEvents.trigger("modal-body:flash", {
+        text: I18n.t("discourse_user_feedbacks.user_feedbacks.feedback_error"),
+        messageClass: "error"
+      });
     });
   }
 }

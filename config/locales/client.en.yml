@@ -13,6 +13,8 @@ en:
         add_user_feedback: "Add Feedback"
         user_ratings_count: "%{count} ratings"
         add_rating: "Add your rating: "
+        feedback_created: "Your feedback has been successfully submitted!"
+        feedback_error: "There was an error submitting your feedback. Please try again."
         user_review:
           placeholder: "Include your review to the user (optional)"
         empty_state_title: "There are no feedbacks yet"
