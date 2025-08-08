@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating Component Test</title>
+    <style>
+        .rating {
+            display: inline-block;
+            height: 1em;
+            line-height: 1.2em;
+            font-size: 18px;
+            align-items: center;
+            cursor: default;
+            margin-left: 0.25em;
+        }
+
+        .icon {
+            cursor: pointer;
+            color: #ccc;
+            font-size: 16px;
+            position: relative;
+            margin-right: 2px;
+        }
+
+        .icon.checked {
+            color: #f39c12 !important;
+        }
+
+        .icon.read-only {
+            cursor: default;
+        }
+
+        .partial-fill {
+            display: none !important;
+        }
+
+        .icon.partial .partial-fill {
+            display: inline-block !important;
+            color: #f39c12;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rating Component Display Test</h1>
+    
+    <div class="test-section">
+        <h3>Rating: 0 stars</h3>
+        <div class="rating user-ratings">
+            <span class="icon">☆</span>
+            <span class="icon">☆</span>
+            <span class="icon">☆</span>
+            <span class="icon">☆</span>
+            <span class="icon">☆</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Rating: 3 stars</h3>
+        <div class="rating user-ratings">
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+            <span class="icon">☆</span>
+            <span class="icon">☆</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Rating: 5 stars</h3>
+        <div class="rating user-ratings">
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Rating: 4.5 stars (with partial)</h3>
+        <div class="rating user-ratings">
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+            <span class="icon checked">★</span>
+            <span class="icon partial">
+                ☆
+                <span class="partial-fill" style="width:50%;">★</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Sample Feedback with Review</h3>
+        <div class="feedback-list-item">
+            <div class="user-rating">
+                <div class="user-data">
+                    <span class="username">testuser</span>
+                    <div class="rating user-ratings">
+                        <span class="icon checked">★</span>
+                        <span class="icon checked">★</span>
+                        <span class="icon checked">★</span>
+                        <span class="icon checked">★</span>
+                        <span class="icon">☆</span>
+                    </div>
+                </div>
+                <span>December 24, 2024</span>
+            </div>
+            <div class="review-content">
+                <strong>Review:</strong>
+                <p>This is a sample review content that should be visible now.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
