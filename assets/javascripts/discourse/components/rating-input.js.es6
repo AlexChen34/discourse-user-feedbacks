@@ -1,40 +1,43 @@
-import Component from "@ember/component";
+import Component from "@glimmer/component";
 import { action } from "@ember/object";
-import { computed } from "@ember/object";
+import I18n from "I18n";
 
-export default Component.extend({
-  classNames: ["user-ratings"],
-  value: 0, // -1 = negative, 0 = neutral, 1 = positive
+export default class RatingInput extends Component {
+  get value() {
+    return this.args.value || 0;
+  }
 
-  didReceiveAttrs() {
-    this._super(...arguments);
-  },
+  get readOnly() {
+    return this.args.readOnly || false;
+  }
 
-  actions: {
-    changeRating(value) {
-      if (this.readOnly) return;
-      this.set("value", value);
+  @action
+  changeRating(value) {
+    if (this.readOnly) return;
+    
+    if (this.args.onChange && typeof this.args.onChange === 'function') {
+      this.args.onChange(value);
     }
-  },
+  }
 
-  isPositive: computed("value", function() {
+  get isPositive() {
     return this.value === 1;
-  }),
+  }
 
-  isNeutral: computed("value", function() {
+  get isNeutral() {
     return this.value === 0;
-  }),
+  }
 
-  isNegative: computed("value", function() {
+  get isNegative() {
     return this.value === -1;
-  }),
+  }
 
-  ratingText: computed("value", function() {
+  get ratingText() {
     switch(this.value) {
-      case 1: return "Positive";
-      case 0: return "Neutral";
-      case -1: return "Negative";
+      case 1: return I18n.t("discourse_user_feedbacks.rating.positive");
+      case 0: return I18n.t("discourse_user_feedbacks.rating.neutral");
+      case -1: return I18n.t("discourse_user_feedbacks.rating.negative");
       default: return "Not rated";
     }
-  })
-});
+  }
+}

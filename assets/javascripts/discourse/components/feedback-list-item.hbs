@@ -7,7 +7,7 @@
       <div class="rating-data">
         <span class="username">{{@feedback.user.username}}</span>
         {{#if this.isEditing}}
-          <RatingInput @value={{this.editRating}} @readOnly={{false}} @onChange={{fn (mut this.editRating)}} />
+          <RatingInput @value={{this.editRating}} @readOnly={{false}} @onChange={{this.updateRating}} />
         {{else}}
           <RatingInput @value={{@feedback.rating}} @readOnly={{true}} />
         {{/if}}
@@ -31,29 +31,29 @@
       {{#if this.currentUser.admin}}
         <div class="admin-actions">
           {{#if this.isEditing}}
-            {{d-button
-              label="Save"
-              action=(action "saveEdit")
+            <DButton
+              @label={{i18n "discourse_user_feedbacks.save_feedback"}}
+              @action={{this.saveEdit}}
               class="btn-primary btn-small"
-            }}
-            {{d-button
-              label="Cancel"
-              action=(action "cancelEdit")
+            />
+            <DButton
+              @label={{i18n "discourse_user_feedbacks.cancel_edit"}}
+              @action={{this.cancelEdit}}
               class="btn-small"
-            }}
+            />
           {{else}}
-            {{d-button
-              label="Edit"
-              action=(action "startEdit")
+            <DButton
+              @label={{i18n "discourse_user_feedbacks.edit_feedback"}}
+              @action={{this.startEdit}}
               class="btn-small"
-              icon="pencil-alt"
-            }}
-            {{d-button
-              label="Delete"
-              action=(action "deleteFeedback")
+              @icon="pencil-alt"
+            />
+            <DButton
+              @label={{i18n "discourse_user_feedbacks.delete_feedback"}}
+              @action={{this.deleteFeedback}}
               class="btn-danger btn-small"
-              icon="trash-alt"
-            }}
+              @icon="trash-alt"
+            />
           {{/if}}
         </div>
       {{/if}}
@@ -61,12 +61,13 @@
   </div>
   {{#if this.isEditing}}
     <div class="edit-review">
-      {{textarea
-        rows="3"
-        placeholder="Edit review..."
-        value=this.editReview
+      <Textarea
+        @rows="3"
+        @placeholder="Edit review..."
+        @value={{this.editReview}}
+        @input={{this.updateReview}}
         class="edit-review-textarea"
-      }}
+      />
     </div>
   {{else if @feedback.review}}
     <p class="feedback-review">

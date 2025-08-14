@@ -188,11 +188,43 @@
       .admin-actions {
         margin-top: 8px;
         display: flex;
-        gap: 4px;
+        gap: 6px;
         
         .btn {
           font-size: $font-down-1;
           padding: 4px 8px;
+          font-family: inherit;
+          font-weight: normal;
+          text-decoration: none;
+          
+          &.btn-small {
+            padding: 3px 6px;
+            font-size: $font-down-2;
+            line-height: $line-height-small;
+            border-radius: 3px;
+          }
+          
+          &.btn-primary {
+            background-color: var(--tertiary);
+            border-color: var(--tertiary);
+            color: var(--secondary);
+            
+            &:hover {
+              background-color: var(--tertiary-hover);
+              border-color: var(--tertiary-hover);
+            }
+          }
+          
+          &.btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+            color: var(--secondary);
+            
+            &:hover {
+              background-color: var(--danger-hover);
+              border-color: var(--danger-hover);
+            }
+          }
         }
       }
     }
@@ -213,12 +245,26 @@
     .edit-review-textarea {
       width: 100%;
       box-sizing: border-box;
-      padding: 8px;
+      padding: 8px 12px;
       border: 1px solid var(--primary-low);
       border-radius: 4px;
       background: var(--secondary);
       color: var(--primary);
       resize: vertical;
+      min-height: 60px;
+      font-family: inherit;
+      font-size: $font-0;
+      line-height: $line-height-medium;
+      
+      &:focus {
+        outline: none;
+        border-color: var(--tertiary);
+        box-shadow: 0 0 0 2px rgba(var(--tertiary-rgb), 0.25);
+      }
+      
+      &::placeholder {
+        color: var(--primary-medium);
+      }
     }
   }
 }
