@@ -32,24 +32,24 @@
         <div class="admin-actions">
           {{#if this.isEditing}}
             <DButton
-              @label="Save"
+              @label={{i18n "discourse_user_feedbacks.save_feedback"}}
               @action={{this.saveEdit}}
               class="btn-primary btn-small"
             />
             <DButton
-              @label="Cancel"
+              @label={{i18n "discourse_user_feedbacks.cancel_edit"}}
               @action={{this.cancelEdit}}
               class="btn-small"
             />
           {{else}}
             <DButton
-              @label="Edit"
+              @label={{i18n "discourse_user_feedbacks.edit_feedback"}}
               @action={{this.startEdit}}
               class="btn-small"
               @icon="pencil-alt"
             />
             <DButton
-              @label="Delete"
+              @label={{i18n "discourse_user_feedbacks.delete_feedback"}}
               @action={{this.deleteFeedback}}
               class="btn-danger btn-small"
               @icon="trash-alt"

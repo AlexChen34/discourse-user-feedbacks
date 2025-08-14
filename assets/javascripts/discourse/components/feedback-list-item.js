@@ -76,11 +76,16 @@ export default class FeedbackListItem extends Component {
       this.isEditing = false;
       
       // Call refresh callback if provided to reload the data from server
-      if (this.args.onRefresh && typeof this.args.onRefresh === 'function') {
+      if (this.args?.onRefresh && typeof this.args.onRefresh === 'function') {
         try {
           // Use setTimeout to defer the callback execution and avoid context issues
           setTimeout(() => {
-            this.args.onRefresh();
+            if (this.args?.onRefresh && typeof this.args.onRefresh === 'function') {
+              this.args.onRefresh();
+            } else {
+              console.log('onRefresh callback became unavailable, refreshing page');
+              window.location.reload();
+            }
           }, 10);
         } catch (error) {
           console.warn('Error with onRefresh callback, falling back to page reload:', error);
@@ -101,11 +106,16 @@ export default class FeedbackListItem extends Component {
         type: "DELETE"
       }).then((response) => {
         // Force refresh the page or reload the feedback list
-        if (this.args.onRefresh && typeof this.args.onRefresh === 'function') {
+        if (this.args?.onRefresh && typeof this.args.onRefresh === 'function') {
           try {
             // Use setTimeout to defer the callback execution and avoid context issues
             setTimeout(() => {
-              this.args.onRefresh();
+              if (this.args?.onRefresh && typeof this.args.onRefresh === 'function') {
+                this.args.onRefresh();
+              } else {
+                console.log('onRefresh callback became unavailable, refreshing page');
+                window.location.reload();
+              }
             }, 10);
           } catch (error) {
             console.warn('Error with onRefresh callback, falling back to page reload:', error);
