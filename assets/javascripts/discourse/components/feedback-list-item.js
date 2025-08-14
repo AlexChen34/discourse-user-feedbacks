@@ -12,16 +12,24 @@ export default class FeedbackListItem extends Component {
   @tracked isEditing = false;
   @tracked editRating = null;
   @tracked editReview = "";
+  @tracked isUpdatingRating = false; // Add flag to prevent rapid clicks
 
   @action
   updateRating(newRating) {
-    // Prevent updating to the same rating (avoid multiple clicks)
-    if (this.editRating === newRating) {
-      console.log('Rating already set to', newRating, '- ignoring duplicate click');
+    // Prevent rapid clicking and duplicate selections
+    if (this.isUpdatingRating || this.editRating === newRating) {
+      console.log('Rating update ignored - already updating or same value:', newRating);
       return;
     }
+    
+    this.isUpdatingRating = true;
     console.log('Updating rating from', this.editRating, 'to', newRating);
     this.editRating = newRating;
+    
+    // Reset the flag after a short delay to allow UI updates
+    setTimeout(() => {
+      this.isUpdatingRating = false;
+    }, 200);
   }
 
   @action
@@ -34,6 +42,7 @@ export default class FeedbackListItem extends Component {
     this.isEditing = true;
     this.editRating = this.args.feedback.rating;
     this.editReview = this.args.feedback.review || "";
+    this.isUpdatingRating = false; // Reset the flag when starting edit
   }
 
   @action
@@ -41,6 +50,7 @@ export default class FeedbackListItem extends Component {
     this.isEditing = false;
     this.editRating = null;
     this.editReview = "";
+    this.isUpdatingRating = false; // Reset the flag when cancelling
   }
 
   @action
@@ -56,20 +66,12 @@ export default class FeedbackListItem extends Component {
       type: "PUT",
       data: data
     }).then((response) => {
-      // Update the feedback object with new values (don't reassign the whole object)
-      if (this.args.feedback) {
-        this.args.feedback.rating = this.editRating;
-        this.args.feedback.review = this.editReview;
-        this.args.feedback.admin_modified = true;
-        this.args.feedback.admin_modified_at = new Date().toISOString();
-        if (this.currentUser) {
-          this.args.feedback.admin_modified_by = this.currentUser;
-        }
-      }
+      // Don't modify the args.feedback object directly - it might be read-only
+      // Instead, just update our editing state and let the parent component handle the refresh
       
       this.isEditing = false;
       
-      // Call refresh callback if provided and it's a function
+      // Call refresh callback if provided to reload the data from server
       if (this.args.onRefresh) {
         if (typeof this.args.onRefresh === 'function') {
           try {
@@ -81,11 +83,18 @@ export default class FeedbackListItem extends Component {
               this.args.onRefresh();
             } catch (error2) {
               console.warn('Error calling onRefresh callback (no context):', error2);
+              // Final fallback: refresh the page
+              window.location.reload();
             }
           }
         } else {
           console.warn('onRefresh is not a function:', typeof this.args.onRefresh);
+          // Fallback: refresh the page
+          window.location.reload();
         }
+      } else {
+        // No callback provided, refresh the page
+        window.location.reload();
       }
     }).catch(popupAjaxError);
   }
