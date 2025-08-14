@@ -147,7 +147,107 @@ module DiscourseUserFeedbacks
       })
     end
 
+    def user_feedbacks_total
+      ensure_admin
+      
+      start_date = params[:start_date]&.to_date || 30.days.ago
+      end_date = params[:end_date]&.to_date || Date.current
+      
+      data = []
+      current_date = start_date
+      
+      while current_date <= end_date
+        count = DiscourseUserFeedbacks::UserFeedback.where(created_at: current_date.beginning_of_day..current_date.end_of_day).count
+        data << { x: current_date.strftime('%Y-%m-%d'), y: count }
+        current_date += 1.day
+      end
+      
+      report = {
+        type: 'user_feedbacks_total',
+        title: 'Total User Feedbacks',
+        data: data,
+        total: DiscourseUserFeedbacks::UserFeedback.where(created_at: start_date.beginning_of_day..end_date.end_of_day).count,
+        start_date: start_date,
+        end_date: end_date
+      }
+      
+      render json: { report: report }
+    end
+
+    def user_feedbacks_by_rating
+      ensure_admin
+      
+      start_date = params[:start_date]&.to_date || 30.days.ago
+      end_date = params[:end_date]&.to_date || Date.current
+      
+      feedbacks_in_period = DiscourseUserFeedbacks::UserFeedback.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+      
+      positive_count = feedbacks_in_period.where(rating: 1).count
+      neutral_count = feedbacks_in_period.where(rating: 0).count
+      negative_count = feedbacks_in_period.where(rating: -1).count
+      
+      report = {
+        type: 'user_feedbacks_by_rating',
+        title: 'User Feedbacks by Rating',
+        data: [
+          { x: 'Positive', y: positive_count, color: '#46B54A' },
+          { x: 'Neutral', y: neutral_count, color: '#F7941E' },
+          { x: 'Negative', y: negative_count, color: '#D32F2F' }
+        ],
+        total: positive_count + neutral_count + negative_count,
+        start_date: start_date,
+        end_date: end_date
+      }
+      
+      render json: { report: report }
+    end
+
+    def user_feedbacks_activity
+      ensure_admin
+      
+      start_date = params[:start_date]&.to_date || 30.days.ago
+      end_date = params[:end_date]&.to_date || Date.current
+      
+      data = []
+      current_date = start_date
+      
+      while current_date <= end_date
+        feedbacks_on_date = DiscourseUserFeedbacks::UserFeedback.where(created_at: current_date.beginning_of_day..current_date.end_of_day)
+        
+        positive_count = feedbacks_on_date.where(rating: 1).count
+        neutral_count = feedbacks_on_date.where(rating: 0).count
+        negative_count = feedbacks_on_date.where(rating: -1).count
+        
+        data << {
+          x: current_date.strftime('%Y-%m-%d'),
+          y: positive_count + neutral_count + negative_count,
+          positive: positive_count,
+          neutral: neutral_count,
+          negative: negative_count
+        }
+        
+        current_date += 1.day
+      end
+      
+      report = {
+        type: 'user_feedbacks_activity',
+        title: 'User Feedback Activity',
+        data: data,
+        total: DiscourseUserFeedbacks::UserFeedback.where(created_at: start_date.beginning_of_day..end_date.end_of_day).count,
+        start_date: start_date,
+        end_date: end_date
+      }
+      
+      render json: { report: report }
+    end
+
     private
+
+    def ensure_admin
+      unless current_user.admin?
+        render_json_error("Only administrators can access this endpoint", status: 403)
+      end
+    end
 
     def daily_statistics
       today = Date.current

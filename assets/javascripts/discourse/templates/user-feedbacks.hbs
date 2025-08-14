@@ -34,7 +34,7 @@
   
   {{#if this.model.feedbacks.length}}
     {{#each this.model.feedbacks as |feedback index|}}
-      <FeedbackListItem @feedback={{feedback}} />
+      <FeedbackListItem @feedback={{feedback}} @onRefresh={{fn this.refreshFeedbacks}} />
     {{/each}}
   {{else}}
     <div class="empty-state">

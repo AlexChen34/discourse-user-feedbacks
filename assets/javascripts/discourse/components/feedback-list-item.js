@@ -1,6 +1,69 @@
 import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
+import { action } from "@ember/object";
+import { inject as service } from "@ember/service";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default class FeedbackListItem extends Component {
-  // This is a simple component that displays feedback list items
-  // The feedback data is passed via @feedback argument
+  @service currentUser;
+
+  @tracked isEditing = false;
+  @tracked editRating = null;
+  @tracked editReview = "";
+
+  @action
+  startEdit() {
+    this.isEditing = true;
+    this.editRating = this.args.feedback.rating;
+    this.editReview = this.args.feedback.review || "";
+  }
+
+  @action
+  cancelEdit() {
+    this.isEditing = false;
+    this.editRating = null;
+    this.editReview = "";
+  }
+
+  @action
+  saveEdit() {
+    ajax(`/user_feedbacks/${this.args.feedback.id}.json`, {
+      type: "PUT",
+      data: {
+        user_feedback: {
+          rating: this.editRating,
+          review: this.editReview
+        }
+      }
+    }).then((response) => {
+      // Update the feedback object with new values
+      this.args.feedback.rating = this.editRating;
+      this.args.feedback.review = this.editReview;
+      this.args.feedback.admin_modified = true;
+      this.args.feedback.admin_modified_at = new Date().toISOString();
+      this.args.feedback.admin_modified_by = this.currentUser;
+      
+      this.isEditing = false;
+      
+      // Call refresh callback if provided
+      if (this.args.onRefresh) {
+        this.args.onRefresh();
+      }
+    }).catch(popupAjaxError);
+  }
+
+  @action
+  deleteFeedback() {
+    if (confirm("Are you sure you want to delete this feedback?")) {
+      ajax(`/user_feedbacks/${this.args.feedback.id}.json`, {
+        type: "DELETE"
+      }).then(() => {
+        // Call refresh callback if provided
+        if (this.args.onRefresh) {
+          this.args.onRefresh();
+        }
+      }).catch(popupAjaxError);
+    }
+  }
 }

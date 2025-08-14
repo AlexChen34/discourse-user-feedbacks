@@ -67,6 +67,19 @@ export default Controller.extend({
       }).finally(() => {
         this.set("readOnly", false);
       });
+    },
+
+    refreshFeedbacks() {
+      // Refresh the feedbacks list
+      ajax("/user_feedbacks.json", {
+        type: "GET",
+        data: {
+          feedback_to_id: this.feedback_to_id,
+        },
+      }).then((response) => {
+        this.set("model", response);
+        this.notifyPropertyChange("hasRatedToday");
+      }).catch(popupAjaxError);
     }
   }
 });

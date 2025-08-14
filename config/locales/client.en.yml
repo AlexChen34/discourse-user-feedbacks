@@ -30,6 +30,13 @@ en:
         empty_state_body: "Feedbacks will be displayed once this user receives feedback from community members"
       admin_modified: "Modified by admin"
       modified_by_admin: "Modified by admin"
+      edit_feedback: "Edit"
+      delete_feedback: "Delete"
+      save_feedback: "Save"
+      cancel_edit: "Cancel"
+      confirm_delete: "Are you sure you want to delete this feedback?"
+      feedback_deleted: "Feedback deleted successfully"
+      feedback_updated: "Feedback updated successfully"
       stats:
         title: "User Feedback Statistics"
         daily: "Daily Statistics"

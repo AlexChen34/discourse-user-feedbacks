@@ -184,6 +184,17 @@
         color: var(--tertiary);
         font-style: italic;
       }
+
+      .admin-actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 4px;
+        
+        .btn {
+          font-size: $font-down-1;
+          padding: 4px 8px;
+        }
+      }
     }
   }
 
@@ -194,6 +205,21 @@
     border-radius: 4px;
     border-left: 3px solid var(--primary-low);
     color: var(--primary);
+  }
+
+  .edit-review {
+    margin: 8px 0;
+    
+    .edit-review-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      border: 1px solid var(--primary-low);
+      border-radius: 4px;
+      background: var(--secondary);
+      color: var(--primary);
+      resize: vertical;
+    }
   }
 }
 
