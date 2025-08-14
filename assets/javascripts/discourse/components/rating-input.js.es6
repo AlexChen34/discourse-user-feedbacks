@@ -15,6 +15,12 @@ export default class RatingInput extends Component {
   changeRating(value) {
     if (this.readOnly) return;
     
+    // Prevent duplicate selections - only trigger onChange if value actually changes
+    if (this.value === value) {
+      console.log('Rating already set to', value, '- ignoring duplicate selection');
+      return;
+    }
+    
     if (this.args.onChange && typeof this.args.onChange === 'function') {
       this.args.onChange(value);
     }

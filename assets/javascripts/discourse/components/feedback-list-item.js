@@ -15,6 +15,11 @@ export default class FeedbackListItem extends Component {
 
   @action
   updateRating(newRating) {
+    // Prevent updating to the same rating (avoid multiple clicks)
+    if (this.editRating === newRating) {
+      console.log('Rating already set to', newRating, '- ignoring duplicate click');
+      return;
+    }
     console.log('Updating rating from', this.editRating, 'to', newRating);
     this.editRating = newRating;
   }
@@ -51,19 +56,18 @@ export default class FeedbackListItem extends Component {
       type: "PUT",
       data: data
     }).then((response) => {
-      // Update the feedback object with new values
-      this.args.feedback.rating = this.editRating;
-      this.args.feedback.review = this.editReview;
-      this.args.feedback.admin_modified = true;
-      this.args.feedback.admin_modified_at = new Date().toISOString();
-      if (this.currentUser) {
-        this.args.feedback.admin_modified_by = this.currentUser;
+      // Update the feedback object with new values (don't reassign the whole object)
+      if (this.args.feedback) {
+        this.args.feedback.rating = this.editRating;
+        this.args.feedback.review = this.editReview;
+        this.args.feedback.admin_modified = true;
+        this.args.feedback.admin_modified_at = new Date().toISOString();
+        if (this.currentUser) {
+          this.args.feedback.admin_modified_by = this.currentUser;
+        }
       }
       
       this.isEditing = false;
-      
-      // Force a component re-render to update the UI
-      this.args.feedback = {...this.args.feedback};
       
       // Call refresh callback if provided and it's a function
       if (this.args.onRefresh) {

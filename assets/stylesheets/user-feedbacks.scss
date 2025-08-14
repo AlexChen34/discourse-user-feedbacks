@@ -29,15 +29,18 @@
       }
 
       &:active {
-        transform: translateY(0);
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transform: translateY(0) scale(0.98);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        background: var(--primary-low);
       }
 
       &.selected {
         border-width: 3px;
         font-weight: bold;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        transform: scale(1.08);
+        position: relative;
+        z-index: 2;
       }
 
       &.positive {
@@ -45,6 +48,12 @@
           background: var(--success-low);
           border-color: var(--success-medium);
           color: var(--success-dark);
+          box-shadow: 0 2px 6px rgba(var(--success-rgb), 0.2);
+        }
+        
+        &:active {
+          background: var(--success-medium);
+          transform: translateY(0) scale(0.98);
         }
         
         &.selected {
@@ -60,13 +69,19 @@
           background: var(--primary-very-low);
           border-color: var(--primary-medium);
           color: var(--primary);
+          box-shadow: 0 2px 6px rgba(var(--primary-rgb), 0.15);
+        }
+        
+        &:active {
+          background: var(--primary-low);
+          transform: translateY(0) scale(0.98);
         }
         
         &.selected {
           background: var(--primary-medium);
           border-color: var(--primary);
           color: var(--secondary);
-          box-shadow: 0 3px 8px rgba(var(--primary-rgb), 0.3);
+          box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.35);
         }
       }
 
@@ -75,13 +90,19 @@
           background: var(--danger-low);
           border-color: var(--danger-medium);
           color: var(--danger-dark);
+          box-shadow: 0 2px 6px rgba(var(--danger-rgb), 0.2);
+        }
+        
+        &:active {
+          background: var(--danger-medium);
+          transform: translateY(0) scale(0.98);
         }
         
         &.selected {
           background: var(--danger);
           border-color: var(--danger-dark);
           color: var(--secondary);
-          box-shadow: 0 3px 8px rgba(var(--danger-rgb), 0.3);
+          box-shadow: 0 4px 12px rgba(var(--danger-rgb), 0.35);
         }
       }
     }
