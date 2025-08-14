@@ -90,7 +90,6 @@ module DiscourseUserFeedbacks
     rescue ActiveRecord::RecordInvalid => e
       render_json_error(e.record.errors.full_messages.join(", "), status: 422)
     end
-    end
 
     def index
       raise Discourse::InvalidParameters.new(:feedback_to_id) if params.has_key?(:feedback_to_id) && params[:feedback_to_id].to_i <= 0
