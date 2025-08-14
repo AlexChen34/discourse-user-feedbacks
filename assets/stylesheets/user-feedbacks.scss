@@ -205,7 +205,7 @@
   .rating-summary {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
     font-size: $font-down-1;
     
     .positive {
@@ -221,6 +221,12 @@
     .negative {
       color: var(--danger);
       font-weight: 500;
+    }
+    
+    span:not(:last-child):after {
+      content: ", ";
+      color: var(--primary-medium);
+      margin-left: 2px;
     }
   }
 

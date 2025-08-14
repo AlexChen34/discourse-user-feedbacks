@@ -1,13 +1,13 @@
 <div class="feedback-list-item">
   <div class="user-rating">
     <div class="user-data">
-      {{#link-to "user" feedback.user.username}}
-        {{avatar feedback.user imageSize="large"}}
-      {{/link-to}}
+      <LinkTo @route="user" @model={{this.feedback.user.username}}>
+        {{avatar this.feedback.user imageSize="large"}}
+      </LinkTo>
       <div class="rating-data">
-        <span class="username">{{feedback.user.username}}</span>
-        {{rating-input value=feedback.rating readOnly=true}}
-        {{#if feedback.admin_modified}}
+        <span class="username">{{this.feedback.user.username}}</span>
+        {{rating-input value=this.feedback.rating readOnly=true}}
+        {{#if this.feedback.admin_modified}}
           <span class="admin-modified-indicator">
             {{d-icon "shield-alt"}} {{i18n "discourse_user_feedbacks.admin_modified"}}
           </span>
@@ -15,20 +15,20 @@
       </div>
     </div>
     <div class="feedback-meta">
-      {{format-date feedback.created_at format="medium"}}
-      {{#if feedback.admin_modified_at}}
+      {{format-date this.feedback.created_at format="medium"}}
+      {{#if this.feedback.admin_modified_at}}
         <br>
         <small class="admin-modified-text">
           {{i18n "discourse_user_feedbacks.modified_by_admin"}} 
-          {{feedback.admin_modified_by.username}} 
-          {{format-date feedback.admin_modified_at format="tiny"}}
+          {{this.feedback.admin_modified_by.username}} 
+          {{format-date this.feedback.admin_modified_at format="tiny"}}
         </small>
       {{/if}}
     </div>
   </div>
-  {{#if feedback.review}}
+  {{#if this.feedback.review}}
     <p class="feedback-review">
-      {{html-safe feedback.review}}
+      {{html-safe this.feedback.review}}
     </p>
   {{/if}}
   <hr>

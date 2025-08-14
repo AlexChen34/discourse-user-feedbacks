@@ -5,13 +5,14 @@ function initializeDiscourseUserFeedbacks(api) {
   const site = api.container.lookup("site:main");
   const siteSettings = api.container.lookup("site-settings:main");
 
-  api.includePostAttributes(
+  // Use the new API for tracking post properties
+  api.addTrackedPostProperties([
     "user_average_rating", 
     "user_rating_count", 
     "user_positive_count", 
     "user_neutral_count", 
     "user_negative_count"
-  );
+  ]);
 
   if (
     !site.mobileView &&
@@ -30,7 +31,7 @@ function initializeDiscourseUserFeedbacks(api) {
       return helper.h("div.average-ratings", [
         helper.h("div.rating-summary", [
           helper.h("span.positive-count", `+${positiveCount}`),
-          helper.h("span.neutral-count", `=${neutralCount}`),
+          helper.h("span.neutral-count", `${neutralCount}`),
           helper.h("span.negative-count", `-${negativeCount}`)
         ]),
         helper.h(

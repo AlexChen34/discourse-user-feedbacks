@@ -1,13 +1,12 @@
 <div class="average-ratings">
-  {{#if user.rating_count}}
+  {{#if this.user.rating_count}}
     <div class="rating-summary">
-      <span class="positive">+{{user.positive_count}}</span>
-      <span class="neutral">=
-      {{user.neutral_count}}</span>
-      <span class="negative">-{{user.negative_count}}</span>
+      <span class="positive">+{{this.user.positive_count}}</span>
+      <span class="neutral">{{this.user.neutral_count}}</span>
+      <span class="negative">-{{this.user.negative_count}}</span>
     </div>
     <span class="rating-count">
-      {{#link-to "user.feedbacks" user}}{{i18n "discourse_user_feedbacks.user_feedbacks.user_ratings_count" count=user.rating_count}}{{/link-to}}
+      <LinkTo @route="user.feedbacks" @model={{this.user}}>{{i18n "discourse_user_feedbacks.user_feedbacks.user_ratings_count" count=this.user.rating_count}}</LinkTo>
     </span>
   {{/if}}
 </div>
