@@ -84,7 +84,12 @@ module DiscourseUserFeedbacks
 
       feedback.update!(deleted_at: Time.current)
 
-      render_serialized(feedback, UserFeedbackSerializer)
+      render json: { success: true, message: "Feedback deleted successfully" }
+    rescue ActiveRecord::RecordNotFound
+      render_json_error("Feedback not found", status: 404)
+    rescue ActiveRecord::RecordInvalid => e
+      render_json_error(e.record.errors.full_messages.join(", "), status: 422)
+    end
     end
 
     def index

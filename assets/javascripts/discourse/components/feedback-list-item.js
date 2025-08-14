@@ -55,26 +55,41 @@ export default class FeedbackListItem extends Component {
       this.args.feedback.review = this.editReview;
       this.args.feedback.admin_modified = true;
       this.args.feedback.admin_modified_at = new Date().toISOString();
-      this.args.feedback.admin_modified_by = this.currentUser;
+      if (this.currentUser) {
+        this.args.feedback.admin_modified_by = this.currentUser;
+      }
       
       this.isEditing = false;
       
-      // Call refresh callback if provided
+      // Call refresh callback if provided and it's a function
       if (this.args.onRefresh && typeof this.args.onRefresh === 'function') {
-        this.args.onRefresh();
+        try {
+          this.args.onRefresh();
+        } catch (error) {
+          console.warn('Error calling onRefresh callback:', error);
+        }
       }
     }).catch(popupAjaxError);
   }
 
   @action
   deleteFeedback() {
-    if (confirm(I18n.t("discourse_user_feedbacks.confirm_delete"))) {
+    if (confirm("Are you sure you want to delete this feedback?")) {
       ajax(`/user_feedbacks/${this.args.feedback.id}`, {
         type: "DELETE"
-      }).then(() => {
-        // Call refresh callback if provided
+      }).then((response) => {
+        // Force refresh the page or reload the feedback list
         if (this.args.onRefresh && typeof this.args.onRefresh === 'function') {
-          this.args.onRefresh();
+          try {
+            this.args.onRefresh();
+          } catch (error) {
+            console.warn('Error calling onRefresh callback:', error);
+            // Fallback: refresh the page
+            window.location.reload();
+          }
+        } else {
+          // No callback provided, refresh the page
+          window.location.reload();
         }
       }).catch(popupAjaxError);
     }
