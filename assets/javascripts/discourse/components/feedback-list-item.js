@@ -15,6 +15,7 @@ export default class FeedbackListItem extends Component {
 
   @action
   updateRating(newRating) {
+    console.log('Updating rating from', this.editRating, 'to', newRating);
     this.editRating = newRating;
   }
 
@@ -61,12 +62,25 @@ export default class FeedbackListItem extends Component {
       
       this.isEditing = false;
       
+      // Force a component re-render to update the UI
+      this.args.feedback = {...this.args.feedback};
+      
       // Call refresh callback if provided and it's a function
-      if (this.args.onRefresh && typeof this.args.onRefresh === 'function') {
-        try {
-          this.args.onRefresh();
-        } catch (error) {
-          console.warn('Error calling onRefresh callback:', error);
+      if (this.args.onRefresh) {
+        if (typeof this.args.onRefresh === 'function') {
+          try {
+            this.args.onRefresh.call(this);
+          } catch (error) {
+            console.warn('Error calling onRefresh callback:', error);
+            // Try calling without context
+            try {
+              this.args.onRefresh();
+            } catch (error2) {
+              console.warn('Error calling onRefresh callback (no context):', error2);
+            }
+          }
+        } else {
+          console.warn('onRefresh is not a function:', typeof this.args.onRefresh);
         }
       }
     }).catch(popupAjaxError);
@@ -79,12 +93,23 @@ export default class FeedbackListItem extends Component {
         type: "DELETE"
       }).then((response) => {
         // Force refresh the page or reload the feedback list
-        if (this.args.onRefresh && typeof this.args.onRefresh === 'function') {
-          try {
-            this.args.onRefresh();
-          } catch (error) {
-            console.warn('Error calling onRefresh callback:', error);
-            // Fallback: refresh the page
+        if (this.args.onRefresh) {
+          if (typeof this.args.onRefresh === 'function') {
+            try {
+              this.args.onRefresh.call(this);
+            } catch (error) {
+              console.warn('Error calling onRefresh callback:', error);
+              // Try calling without context
+              try {
+                this.args.onRefresh();
+              } catch (error2) {
+                console.warn('Error calling onRefresh callback (no context):', error2);
+                // Fallback: refresh the page
+                window.location.reload();
+              }
+            }
+          } else {
+            console.warn('onRefresh is not a function:', typeof this.args.onRefresh);
             window.location.reload();
           }
         } else {

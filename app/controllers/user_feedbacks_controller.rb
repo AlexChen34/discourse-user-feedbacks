@@ -15,15 +15,17 @@ module DiscourseUserFeedbacks
       raise Discourse::InvalidParameters.new(:rating) unless [-1, 0, 1].include?(rating_value)
       raise Discourse::InvalidParameters.new(:feedback_to_id) if params[:feedback_to_id].to_i <= 0
 
-      # Check if user already rated this person today
-      existing_today = DiscourseUserFeedbacks::UserFeedback.where(
-        user_id: current_user.id,
-        feedback_to_id: params[:feedback_to_id],
-        created_at: Date.current.beginning_of_day..Date.current.end_of_day
-      ).exists?
+      # Check if user already rated this person today (skip for admins/moderators)
+      unless current_user.admin? || current_user.moderator?
+        existing_today = DiscourseUserFeedbacks::UserFeedback.where(
+          user_id: current_user.id,
+          feedback_to_id: params[:feedback_to_id],
+          created_at: Date.current.beginning_of_day..Date.current.end_of_day
+        ).exists?
 
-      if existing_today
-        return render_json_error("You can only rate a user once per day", status: 422)
+        if existing_today
+          return render_json_error("You can only rate a user once per day", status: 422)
+        end
       end
 
       opts = {

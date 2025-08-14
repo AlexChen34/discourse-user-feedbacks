@@ -1,11 +1,11 @@
 <div class="rating-selector">
   {{#unless this.readOnly}}
     <div class="rating-buttons">
-      <button class="rating-btn negative {{if this.isNegative 'selected'}}" 
-              {{on "click" (fn this.changeRating -1)}}
-              title="Negative"
+      <button class="rating-btn positive {{if this.isPositive 'selected'}}" 
+              {{on "click" (fn this.changeRating 1)}}
+              title="Positive"
               type="button">
-        {{d-icon "thumbs-down"}} {{i18n "discourse_user_feedbacks.rating.negative"}}
+        {{d-icon "thumbs-up"}} {{i18n "discourse_user_feedbacks.rating.positive"}}
       </button>
       
       <button class="rating-btn neutral {{if this.isNeutral 'selected'}}" 
@@ -15,11 +15,11 @@
         {{d-icon "minus"}} {{i18n "discourse_user_feedbacks.rating.neutral"}}
       </button>
       
-      <button class="rating-btn positive {{if this.isPositive 'selected'}}" 
-              {{on "click" (fn this.changeRating 1)}}
-              title="Positive"
+      <button class="rating-btn negative {{if this.isNegative 'selected'}}" 
+              {{on "click" (fn this.changeRating -1)}}
+              title="Negative"
               type="button">
-        {{d-icon "thumbs-up"}} {{i18n "discourse_user_feedbacks.rating.positive"}}
+        {{d-icon "thumbs-down"}} {{i18n "discourse_user_feedbacks.rating.negative"}}
       </button>
     </div>
   {{else}}
