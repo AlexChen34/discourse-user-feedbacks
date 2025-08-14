@@ -412,3 +412,50 @@
     min-height: 200px;
   }
 }
+
+// Post ratings display
+.user-ratings-display {
+  margin-top: 8px;
+  font-size: $font-down-1;
+  
+  .rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    
+    span {
+      font-weight: 500;
+      
+      &.positive {
+        color: var(--success);
+      }
+      
+      &.neutral {
+        color: var(--primary-medium);
+      }
+      
+      &.negative {
+        color: var(--danger);
+      }
+      
+      &:not(:last-child):after {
+        content: ", ";
+        color: var(--primary-medium);
+        margin-left: 2px;
+      }
+    }
+  }
+  
+  .rating-count {
+    a {
+      color: var(--tertiary);
+      text-decoration: none;
+      font-size: $font-down-2;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

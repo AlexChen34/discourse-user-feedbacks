@@ -14,11 +14,14 @@ function initializeDiscourseUserFeedbacks(api) {
     "user_negative_count"
   ]);
 
+  // Use modern post decoration instead of deprecated widget decoration
   if (
     !site.mobileView &&
     siteSettings.user_feedbacks_display_average_ratings_beside_username_on_post
   ) {
-    api.decorateWidget("poster-name:after", (helper) => {
+    api.decorateCooked(($elem, helper) => {
+      if (!helper || !helper.attrs) return;
+      
       const positiveCount = helper.attrs.user_positive_count || 0;
       const neutralCount = helper.attrs.user_neutral_count || 0;
       const negativeCount = helper.attrs.user_negative_count || 0;
@@ -27,25 +30,25 @@ function initializeDiscourseUserFeedbacks(api) {
       if (helper.attrs.user_id <= 0 || totalCount === 0) {
         return;
       }
-      
-      return helper.h("div.average-ratings", [
-        helper.h("div.rating-summary", [
-          helper.h("span.positive-count", `+${positiveCount}`),
-          helper.h("span.neutral-count", `${neutralCount}`),
-          helper.h("span.negative-count", `-${negativeCount}`)
-        ]),
-        helper.h(
-          "span.rating-count",
-          helper.h(
-            "a",
-            { href: `${helper.attrs.usernameUrl}/feedbacks` },
-            I18n.t(
-              "discourse_user_feedbacks.user_feedbacks.user_ratings_count",
-              { count: totalCount }
-            )
-          )
-        ),
-      ]);
+
+      const $posterInfo = $elem.closest('.topic-post').find('.poster-info');
+      if ($posterInfo.length && !$posterInfo.find('.user-ratings-display').length) {
+        const ratingsHtml = `
+          <div class="user-ratings-display">
+            <div class="rating-summary">
+              <span class="positive">+${positiveCount}</span>
+              <span class="neutral">${neutralCount}</span>
+              <span class="negative">-${negativeCount}</span>
+            </div>
+            <span class="rating-count">
+              <a href="${helper.attrs.usernameUrl}/feedbacks">
+                ${I18n.t("discourse_user_feedbacks.user_feedbacks.user_ratings_count", { count: totalCount })}
+              </a>
+            </span>
+          </div>
+        `;
+        $posterInfo.append(ratingsHtml);
+      }
     });
   }
 }
