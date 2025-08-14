@@ -12,24 +12,28 @@ export default class FeedbackListItem extends Component {
   @tracked isEditing = false;
   @tracked editRating = null;
   @tracked editReview = "";
-  @tracked isUpdatingRating = false; // Add flag to prevent rapid clicks
+  
+  // Simple rate limiting using timestamp
+  lastRatingUpdate = 0;
 
   @action
   updateRating(newRating) {
-    // Prevent rapid clicking and duplicate selections
-    if (this.isUpdatingRating || this.editRating === newRating) {
-      console.log('Rating update ignored - already updating or same value:', newRating);
+    const now = Date.now();
+    
+    // Prevent duplicate selections and rate limit rapid clicks (300ms minimum)
+    if (this.editRating === newRating) {
+      console.log('Rating already set to', newRating, '- ignoring duplicate');
       return;
     }
     
-    this.isUpdatingRating = true;
+    if (now - this.lastRatingUpdate < 300) {
+      console.log('Rate limiting - ignoring rapid click');
+      return;
+    }
+    
     console.log('Updating rating from', this.editRating, 'to', newRating);
     this.editRating = newRating;
-    
-    // Reset the flag after a short delay to allow UI updates
-    setTimeout(() => {
-      this.isUpdatingRating = false;
-    }, 200);
+    this.lastRatingUpdate = now;
   }
 
   @action
@@ -42,7 +46,7 @@ export default class FeedbackListItem extends Component {
     this.isEditing = true;
     this.editRating = this.args.feedback.rating;
     this.editReview = this.args.feedback.review || "";
-    this.isUpdatingRating = false; // Reset the flag when starting edit
+    this.lastRatingUpdate = 0; // Reset rate limiting
   }
 
   @action
@@ -50,7 +54,7 @@ export default class FeedbackListItem extends Component {
     this.isEditing = false;
     this.editRating = null;
     this.editReview = "";
-    this.isUpdatingRating = false; // Reset the flag when cancelling
+    this.lastRatingUpdate = 0; // Reset rate limiting
   }
 
   @action
