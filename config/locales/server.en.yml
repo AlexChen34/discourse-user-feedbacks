@@ -2,7 +2,13 @@ en:
   site_settings:
     user_feedbacks_enabled: "Enable user Feedbacks"
     user_feedbacks_allow_reviews: "Allow users to review each others"
-    user_feedbacks_display_average_ratings_beside_username_on_post: "Display average user rating beside username on every post of the user"
-    user_feedbacks_display_average_ratings_on_profile: "Display average user rating on user's profile"
-    user_feedbacks_display_average_ratings_on_user_card: "Display average user rating on user card"
+    user_feedbacks_display_average_ratings_beside_username_on_post: "Display user feedback stats beside username on every post"
+    user_feedbacks_display_average_ratings_on_profile: "Display user feedback stats on user's profile"
+    user_feedbacks_display_average_ratings_on_user_card: "Display user feedback stats on user card"
     user_feedbacks_hide_feedbacks_from_user: "Hide feedbacks from the user"
+  user_feedback:
+    errors:
+      cannot_rate_self: "You cannot rate yourself"
+      already_rated_today: "You can only rate a user once per day"
+      invalid_rating: "Rating must be positive (1), neutral (0), or negative (-1)"
+      permission_denied: "You don't have permission to perform this action"

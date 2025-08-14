@@ -1,120 +1,40 @@
 import Component from "@ember/component";
 import { action } from "@ember/object";
-import discourseComputed from "discourse-common/utils/decorators";
+import { computed } from "@ember/object";
 
 export default Component.extend({
   classNames: ["user-ratings"],
-  value: 0,
-  checkedOne: false,
-  checkedTwo: false,
-  checkedThree: false,
-  checkedFour: false,
-  checkedFive: false,
-  percentageOne: 68,
+  value: 0, // -1 = negative, 0 = neutral, 1 = positive
 
   didReceiveAttrs() {
     this._super(...arguments);
-    this.changeRating();
   },
 
-  @action
-  changeRating(value) {
-    if (value && this.readOnly) return;
-
-    if (value > 0) {
+  actions: {
+    changeRating(value) {
+      if (this.readOnly) return;
       this.set("value", value);
-    } else {
-      this.set("value", this.value);
     }
   },
 
-  @discourseComputed("value")
-  checkedOne(value) {
-    if (parseInt(value) >= 1) {
-      return true;
+  isPositive: computed("value", function() {
+    return this.value === 1;
+  }),
+
+  isNeutral: computed("value", function() {
+    return this.value === 0;
+  }),
+
+  isNegative: computed("value", function() {
+    return this.value === -1;
+  }),
+
+  ratingText: computed("value", function() {
+    switch(this.value) {
+      case 1: return "Positive";
+      case 0: return "Neutral";
+      case -1: return "Negative";
+      default: return "Not rated";
     }
-
-    return false;
-  },
-
-  @discourseComputed("value")
-  checkedTwo(value) {
-    if (parseInt(value) >= 2) {
-      return true;
-    }
-
-    return false;
-  },
-
-  @discourseComputed("value")
-  checkedThree(value) {
-    if (parseInt(value) >= 3) {
-      return true;
-    }
-
-    return false;
-  },
-
-  @discourseComputed("value")
-  checkedFour(value) {
-    if (parseInt(value) >= 4) {
-      return true;
-    }
-
-    return false;
-  },
-
-  @discourseComputed("value")
-  checkedFive(value) {
-    if (parseInt(value) >= 5) {
-      return true;
-    }
-
-    return false;
-  },
-
-  @discourseComputed("value")
-  percentageOne(value) {
-    if (!this.checkedOne) {
-      return ((Math.round(value * 100) / 100) % 1) * 100;
-    }
-
-    return 0;
-  },
-
-  @discourseComputed("value")
-  percentageTwo(value) {
-    if (this.checkedOne && !this.checkedTwo) {
-      return ((Math.round(value * 100) / 100) % 1) * 100;
-    }
-
-    return 0;
-  },
-
-  @discourseComputed("value")
-  percentageThree(value) {
-    if (this.checkedTwo && !this.checkedThree) {
-      return ((Math.round(value * 100) / 100) % 1) * 100;
-    }
-
-    return 0;
-  },
-
-  @discourseComputed("value")
-  percentageFour(value) {
-    if (this.checkedThree && !this.checkedFour) {
-      return ((Math.round(value * 100) / 100) % 1) * 100;
-    }
-
-    return 0;
-  },
-
-  @discourseComputed("value")
-  percentageFive(value) {
-    if (this.checkedFour && !this.checkedFive) {
-      return ((Math.round(value * 100) / 100) % 1) * 100;
-    }
-
-    return 0;
-  },
+  })
 });

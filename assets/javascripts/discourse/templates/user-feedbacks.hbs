@@ -1,8 +1,9 @@
 <div class="user-feedbacks-left"></div>
 <div class="user-feedbacks-right">
-  {{#if canGiveFeedback}}
+  {{#if showRatingInterface}}
     <div class="ratings-input">
       <strong>{{i18n "discourse_user_feedbacks.user_feedbacks.add_rating"}}</strong>
+      <p class="rating-help">{{i18n "discourse_user_feedbacks.user_feedbacks.rating_help"}}</p>
       {{rating-input value=rating readOnly=readOnly}}
     </div>
     <div class="review-input">
@@ -24,7 +25,13 @@
       }}
     </div>
     <hr>
+  {{else if hasRatedToday}}
+    <div class="rating-notice">
+      <p>{{i18n "discourse_user_feedbacks.user_feedbacks.already_rated_today"}}</p>
+    </div>
+    <hr>
   {{/if}}
+  
   {{#if model.feedbacks.length}}
     {{#each model.feedbacks as |feedback index|}}
       {{feedback-list-item feedback=feedback}}

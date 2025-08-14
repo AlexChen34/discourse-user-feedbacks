@@ -17,3 +17,13 @@ plugins:
   user_feedbacks_hide_feedbacks_from_user:
     client: true
     default: false
+  user_feedbacks_enable_stats:
+    client: true
+    default: true
+    description: "Enable statistics dashboard for admins"
+  user_feedbacks_min_trust_level:
+    default: 0
+    description: "Minimum trust level required to give feedback"
+  user_feedbacks_daily_limit:
+    default: 5
+    description: "Maximum number of ratings a user can give per day"

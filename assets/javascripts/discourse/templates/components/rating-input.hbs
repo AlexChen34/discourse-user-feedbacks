@@ -1,22 +1,39 @@
-<div class="rating">
-  <span class="icon {{if checkedOne "checked"}} {{if percentageOne "partial"}} {{if readOnly "read-only"}}" {{action "changeRating" 1}}>
-    ☆
-    <span class="partial-fill" style="width:{{percentageOne}}%;">★</span>
-  </span>
-  <span class="icon {{if checkedTwo "checked"}} {{if percentageTwo "partial"}} {{if readOnly "read-only"}}" {{action "changeRating" 2}}>
-    ☆
-    <span class="partial-fill" style="width:{{percentageTwo}}%;">★</span>
-  </span>
-  <span class="icon {{if checkedThree "checked"}} {{if percentageThree "partial"}} {{if readOnly "read-only"}}" {{action "changeRating" 3}}>
-    ☆
-    <span class="partial-fill" style="width:{{percentageThree}}%;">★</span>
-  </span>
-  <span class="icon {{if checkedFour "checked"}} {{if percentageFour "partial"}} {{if readOnly "read-only"}}" {{action "changeRating" 4}}>
-    ☆
-    <span class="partial-fill" style="width:{{percentageFour}}%;">★</span>
-  </span>
-  <span class="icon {{if checkedFive "checked"}} {{if percentageFive "partial"}} {{if readOnly "read-only"}}" {{action "changeRating" 5}}>
-    ☆
-    <span class="partial-fill" style="width:{{percentageFive}}%;">★</span>
-  </span>
+<div class="rating-selector">
+  {{#unless readOnly}}
+    <div class="rating-buttons">
+      <button class="rating-btn negative {{if isNegative 'selected'}}" 
+              {{action "changeRating" -1}}
+              title="Negative">
+        {{d-icon "thumbs-down"}} {{i18n "discourse_user_feedbacks.rating.negative"}}
+      </button>
+      
+      <button class="rating-btn neutral {{if isNeutral 'selected'}}" 
+              {{action "changeRating" 0}}
+              title="Neutral">
+        {{d-icon "minus"}} {{i18n "discourse_user_feedbacks.rating.neutral"}}
+      </button>
+      
+      <button class="rating-btn positive {{if isPositive 'selected'}}" 
+              {{action "changeRating" 1}}
+              title="Positive">
+        {{d-icon "thumbs-up"}} {{i18n "discourse_user_feedbacks.rating.positive"}}
+      </button>
+    </div>
+  {{else}}
+    <div class="rating-display">
+      {{#if isPositive}}
+        <span class="rating-text positive">
+          {{d-icon "thumbs-up"}} {{i18n "discourse_user_feedbacks.rating.positive"}}
+        </span>
+      {{else if isNeutral}}
+        <span class="rating-text neutral">
+          {{d-icon "minus"}} {{i18n "discourse_user_feedbacks.rating.neutral"}}
+        </span>
+      {{else if isNegative}}
+        <span class="rating-text negative">
+          {{d-icon "thumbs-down"}} {{i18n "discourse_user_feedbacks.rating.negative"}}
+        </span>
+      {{/if}}
+    </div>
+  {{/unless}}
 </div>

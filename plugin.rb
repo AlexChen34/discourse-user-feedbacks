@@ -60,9 +60,12 @@ after_initialize do
 
     return nil if !user
 
-    count = DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).count
-    count = 1 if count <= 0
-    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).sum(:rating) / count.to_f
+    feedbacks = DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id)
+    return 0 if feedbacks.count == 0
+    
+    total = feedbacks.sum(:rating)
+    count = feedbacks.count
+    (total.to_f / count).round(2)
   end
 
   add_to_serializer(:basic_user, :rating_count) do
@@ -74,15 +77,56 @@ after_initialize do
     DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).count
   end
 
+  add_to_serializer(:basic_user, :positive_count) do
+    user = object
+    user = object[:user] if object.class != User
+
+    return nil if !user
+
+    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id, rating: 1).count
+  end
+
+  add_to_serializer(:basic_user, :neutral_count) do
+    user = object
+    user = object[:user] if object.class != User
+
+    return nil if !user
+
+    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id, rating: 0).count
+  end
+
+  add_to_serializer(:basic_user, :negative_count) do
+    user = object
+    user = object[:user] if object.class != User
+
+    return nil if !user
+
+    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id, rating: -1).count
+  end
+
   add_to_serializer(:post, :user_average_rating) do
     user = object.user
-    count = DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).count
-    count = 1 if count <= 0
-
-    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id).sum(:rating) / count.to_f
+    feedbacks = DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: user.id)
+    return 0 if feedbacks.count == 0
+    
+    total = feedbacks.sum(:rating)
+    count = feedbacks.count
+    (total.to_f / count).round(2)
   end
 
   add_to_serializer(:post, :user_rating_count) do
     DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: object.user.id).count
+  end
+
+  add_to_serializer(:post, :user_positive_count) do
+    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: object.user.id, rating: 1).count
+  end
+
+  add_to_serializer(:post, :user_neutral_count) do
+    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: object.user.id, rating: 0).count
+  end
+
+  add_to_serializer(:post, :user_negative_count) do
+    DiscourseUserFeedbacks::UserFeedback.where(feedback_to_id: object.user.id, rating: -1).count
   end
 end

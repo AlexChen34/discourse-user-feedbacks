@@ -1,18 +1,35 @@
 <div class="feedback-list-item">
   <div class="user-rating">
     <div class="user-data">
-      <a href={{feedback.user.path}} data-user-card={{feedback.user.username}}>
+      {{#link-to "user" feedback.user.username}}
         {{avatar feedback.user imageSize="large"}}
-      </a>
+      {{/link-to}}
       <div class="rating-data">
         <span class="username">{{feedback.user.username}}</span>
         {{rating-input value=feedback.rating readOnly=true}}
+        {{#if feedback.admin_modified}}
+          <span class="admin-modified-indicator">
+            {{d-icon "shield-alt"}} {{i18n "discourse_user_feedbacks.admin_modified"}}
+          </span>
+        {{/if}}
       </div>
     </div>
-    {{format-date feedback.created_at format="medium"}}
+    <div class="feedback-meta">
+      {{format-date feedback.created_at format="medium"}}
+      {{#if feedback.admin_modified_at}}
+        <br>
+        <small class="admin-modified-text">
+          {{i18n "discourse_user_feedbacks.modified_by_admin"}} 
+          {{feedback.admin_modified_by.username}} 
+          {{format-date feedback.admin_modified_at format="tiny"}}
+        </small>
+      {{/if}}
+    </div>
   </div>
-  <p>
-    {{html-safe feedback.review}}
-  </p>
+  {{#if feedback.review}}
+    <p class="feedback-review">
+      {{html-safe feedback.review}}
+    </p>
+  {{/if}}
   <hr>
 </div>
