@@ -65,7 +65,7 @@
         @rows="3"
         @placeholder="Edit review..."
         @value={{this.editReview}}
-        @input={{this.updateReview}}
+        {{on "input" this.updateReview}}
         class="edit-review-textarea"
       />
     </div>

@@ -1,12 +1,29 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import I18n from "I18n";
 
 export default class RatingInput extends Component {
-  @tracked internalValue = this.args.value || 0;
-
   get value() {
-    return this.args.value !== undefined ? this.args.value : this.internalValue;
+    return this.args.value || 0;
+  }
+
+  get readOnly() {
+    return this.args.readOnly || false;
+  }
+
+  @action
+  changeRating(value) {
+    if (this.readOnly) return;
+    
+    // Prevent duplicate selections - only trigger onChange if value actually changes
+    if (this.value === value) {
+      console.log('Rating already set to', value, '- ignoring duplicate selection');
+      return;
+    }
+    
+    if (this.args.onChange && typeof this.args.onChange === 'function') {
+      this.args.onChange(value);
+    }
   }
 
   get isPositive() {
@@ -21,19 +38,12 @@ export default class RatingInput extends Component {
     return this.value === -1;
   }
 
-  get readOnly() {
-    return this.args.readOnly || false;
-  }
-
-  @action
-  changeRating(value) {
-    if (this.readOnly) return;
-    
-    this.internalValue = value;
-    
-    // Call the parent's onChange callback if provided
-    if (this.args.onChange) {
-      this.args.onChange(value);
+  get ratingText() {
+    switch(this.value) {
+      case 1: return I18n.t("discourse_user_feedbacks.rating.positive");
+      case 0: return I18n.t("discourse_user_feedbacks.rating.neutral");
+      case -1: return I18n.t("discourse_user_feedbacks.rating.negative");
+      default: return "Not rated";
     }
   }
 }
