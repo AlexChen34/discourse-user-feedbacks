@@ -76,28 +76,19 @@ export default class FeedbackListItem extends Component {
       this.isEditing = false;
       
       // Call refresh callback if provided to reload the data from server
-      if (this.args.onRefresh) {
-        if (typeof this.args.onRefresh === 'function') {
-          try {
-            this.args.onRefresh.call(this);
-          } catch (error) {
-            console.warn('Error calling onRefresh callback:', error);
-            // Try calling without context
-            try {
-              this.args.onRefresh();
-            } catch (error2) {
-              console.warn('Error calling onRefresh callback (no context):', error2);
-              // Final fallback: refresh the page
-              window.location.reload();
-            }
-          }
-        } else {
-          console.warn('onRefresh is not a function:', typeof this.args.onRefresh);
-          // Fallback: refresh the page
+      if (this.args.onRefresh && typeof this.args.onRefresh === 'function') {
+        try {
+          // Use setTimeout to defer the callback execution and avoid context issues
+          setTimeout(() => {
+            this.args.onRefresh();
+          }, 10);
+        } catch (error) {
+          console.warn('Error with onRefresh callback, falling back to page reload:', error);
           window.location.reload();
         }
       } else {
-        // No callback provided, refresh the page
+        // No callback provided or not a function, refresh the page
+        console.log('No valid onRefresh callback, refreshing page');
         window.location.reload();
       }
     }).catch(popupAjaxError);
@@ -110,27 +101,19 @@ export default class FeedbackListItem extends Component {
         type: "DELETE"
       }).then((response) => {
         // Force refresh the page or reload the feedback list
-        if (this.args.onRefresh) {
-          if (typeof this.args.onRefresh === 'function') {
-            try {
-              this.args.onRefresh.call(this);
-            } catch (error) {
-              console.warn('Error calling onRefresh callback:', error);
-              // Try calling without context
-              try {
-                this.args.onRefresh();
-              } catch (error2) {
-                console.warn('Error calling onRefresh callback (no context):', error2);
-                // Fallback: refresh the page
-                window.location.reload();
-              }
-            }
-          } else {
-            console.warn('onRefresh is not a function:', typeof this.args.onRefresh);
+        if (this.args.onRefresh && typeof this.args.onRefresh === 'function') {
+          try {
+            // Use setTimeout to defer the callback execution and avoid context issues
+            setTimeout(() => {
+              this.args.onRefresh();
+            }, 10);
+          } catch (error) {
+            console.warn('Error with onRefresh callback, falling back to page reload:', error);
             window.location.reload();
           }
         } else {
-          // No callback provided, refresh the page
+          // No callback provided or not a function, refresh the page
+          console.log('No valid onRefresh callback, refreshing page');
           window.location.reload();
         }
       }).catch(popupAjaxError);
